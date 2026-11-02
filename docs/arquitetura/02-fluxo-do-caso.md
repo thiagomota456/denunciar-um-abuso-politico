@@ -15,7 +15,7 @@ sequenceDiagram
     D->>P: Cadastra a denúncia e envia as provas (Casos)
     P->>M: Coloca na fila de revisão
     M->>P: Classifica, revisa o resumo e publica sem dados pessoais (Casos)
-    P->>A: Caso aparece na busca; na F2, também notifica em rodízio (Assistencia)
+    P->>A: Caso aparece na busca. Na F2, também notifica em rodízio (Assistencia)
     A->>P: Manifesta interesse, vendo só o resumo público (Assistencia)
     P->>D: Mostra o perfil do profissional
     alt Autoriza
