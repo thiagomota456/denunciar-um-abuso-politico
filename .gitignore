@@ -1,0 +1,29 @@
+# Segredos e dados locais
+.env
+*.env.local
+data/
+backups/
+
+# .NET
+bin/
+obj/
+*.user
+TestResults/
+.vs/
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+coverage/
+
+# Playwright
+playwright-report/
+test-results/
+
+# Editores e sistema
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db

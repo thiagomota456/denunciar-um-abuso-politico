@@ -70,16 +70,17 @@ As mesmas variações em `.com.br` também estavam livres.
 ├── src/
 │   ├── backend/
 │   │   ├── Denuncias.sln
-│   │   ├── Api/                     # host ASP.NET Core: Program.cs, endpoints, policies
+│   │   ├── Api/                     # host ASP.NET Core: Program.cs, registro dos módulos
+│   │   ├── Comum/                   # criptografia de campos, auditoria, autorização
 │   │   ├── Modulos/
-│   │   │   ├── Identidade/          # cada módulo: Domain, Application, Infra (DbContext próprio)
+│   │   │   ├── Identidade/          # cada módulo: Contratos, Dominio, Aplicacao, Infra, Endpoints
 │   │   │   ├── Casos/
 │   │   │   ├── Assistencia/
 │   │   │   └── Plataforma/
-│   │   ├── Comum/                   # criptografia de campos, auditoria, autorização
 │   │   └── tests/
 │   │       ├── Unitarios/
-│   │       └── Integracao/          # Testcontainers + WebApplicationFactory
+│   │       ├── Integracao/          # Testcontainers + WebApplicationFactory
+│   │       └── Arquitetura/         # fronteiras entre módulos
 │   └── frontend/                    # Angular
 ├── deploy/
 │   ├── Caddyfile
@@ -275,12 +276,17 @@ ClamAv__Host=clamav
 ClamAv__Port=3310
 ClamAv__Habilitado=false
 
-# Autenticação
-Jwt__Emissor=denuncias
-Jwt__Chave=gere-com-openssl-rand-base64-48
+# Hash de CPF para busca (HMAC-SHA256). Nunca troque depois de ter dados: os hashes antigos deixam de bater.
+Cifra__ChaveHmac=gere-com-openssl-rand-base64-32
+
+# Primeiro admin, criado pelo seed se não existir
+Admin__Email=admin@localhost
+Admin__SenhaInicial=troque-no-primeiro-login
 ```
 
-**As chaves de criptografia são o item mais crítico do backup.** Sem elas, os campos cifrados do banco ficam ilegíveis para sempre. Faça backup do volume `chaves` separado do backup do banco.
+**As chaves de criptografia são o item mais crítico do backup.** Sem elas, os campos cifrados do banco ficam ilegíveis para sempre. Faça backup do volume `chaves` e do valor de `Cifra__ChaveHmac` separados do backup do banco.
+
+A autenticação usa cookie (ver [decisões](decisoes.md), D4), por isso não há chave de JWT.
 
 ## 7. Testes
 
@@ -338,8 +344,8 @@ dev-av:         ## dev com antivírus
 seed:           ## cria usuários e casos de exemplo, um por papel
 	$(DEV) exec api dotnet run --project Api -- seed
 
-migrate:        ## aplica migrations
-	$(DEV) exec api dotnet ef database update --project Api
+migrate:        ## aplica as migrations de todos os módulos
+	$(DEV) exec api dotnet run --project Api -- migrate
 
 test:           ## testes do backend e do frontend
 	cd src/backend && dotnet test

@@ -4,10 +4,16 @@ Plataforma web, apartidária e sem fins lucrativos, para cidadãos denunciarem a
 
 ## Stack
 
-- **Backend:** C# / ASP.NET Core 8 + EF Core, monólito modular
+- **Backend:** C# / ASP.NET Core (.NET 10 LTS) + EF Core, monólito modular
 - **Frontend:** Angular
 - **Banco:** PostgreSQL
 - **Hospedagem mínima:** 1 VPS com Docker Compose (Caddy + API + PostgreSQL + ClamAV)
+
+## Para quem vai construir (pessoas ou IA)
+
+Comece pelo [AGENTS.md](AGENTS.md): ordem de leitura, regras de segurança e como pegar a próxima tarefa em [docs/tarefas.md](docs/tarefas.md).
+
+- [Requisitos](docs/requisitos.md) · [Convenções](docs/convencoes.md) · [Decisões](docs/decisoes.md) · [Glossário](docs/glossario.md)
 
 ## Arquitetura
 
