@@ -18,3 +18,7 @@ Diagramas em Mermaid (o GitHub renderiza direto):
 3. [Distribuição de notificações (rodízio)](docs/arquitetura/03-distribuicao-notificacoes.md)
 4. [Modelo de dados](docs/arquitetura/04-modelo-de-dados.md)
 5. [Privacidade e permissões](docs/arquitetura/05-permissoes.md)
+
+## Infraestrutura e desenvolvimento
+
+Custos, escolha de VPS e domínio, Docker, variáveis de ambiente, testes e como rodar localmente: [docs/infraestrutura.md](docs/infraestrutura.md).
