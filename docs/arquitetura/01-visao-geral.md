@@ -1,70 +1,75 @@
 # 1 · Visão geral: módulos e integrações
 
-Monólito modular com um único deploy. Cada módulo tem suas próprias tabelas e serviços e só conversa com os outros por interfaces internas, o que permite separá-los no futuro se for preciso.
+Monólito modular com um único deploy. O backend tem **3 módulos no MVP** (um projeto C# e um schema do banco cada) e um quarto na Fase 3. Os módulos só conversam entre si por interfaces públicas (`Contratos/`), o que permite separá-los no futuro se for preciso.
 
 ```mermaid
 flowchart LR
     subgraph Usuarios["Quem usa"]
-        U1["Denunciante<br/>registra casos e provas"]
-        U2["Advogado ou escritório<br/>busca casos, presta assistência"]
-        U3["Moderador e admin<br/>revisa, verifica, audita"]
-        U4["Visitante e doador<br/>consulta, doa, vê transparência"]
+        U1["Denunciante"]
+        U2["Advogado ou escritório"]
+        U3["Moderador e admin"]
+        U4["Visitante"]
     end
 
-    FE["Angular<br/>um app, carregamento sob demanda por área<br/>servido como estático pelo Caddy"]
+    FE["Angular<br/>áreas: pública, denunciante,<br/>profissional, admin"]
 
-    subgraph API["API ASP.NET Core (C#) · monólito modular"]
+    subgraph API["API ASP.NET Core · um único processo"]
         direction TB
-        M1["Identidade e acesso<br/>login, MFA, CPF via gov.br · F1"]
-        M2["Denúncias<br/>registro em etapas, status · F1"]
-        M3["Provas e arquivos<br/>upload cifrado, hash, antivírus · F1"]
-        M4["Consentimento<br/>autorização por escopo, revogação · F1"]
-        M5["Profissionais<br/>perfil, OAB, verificação · F1"]
-        M6["Classificação<br/>categoria, área, urgência · F1 manual, F2 auto"]
-        M7["Notificações<br/>rodízio, e-mail, painel · F2"]
-        M8["Moderação<br/>revisão do resumo, abuso · F1"]
-        M9["Atendimentos e avaliações · F2"]
-        M10["Doações e fundo<br/>transparência · F3"]
-        M11["Publicidade · F3"]
-        M12["Auditoria e LGPD · F1"]
-        COMUM["Camada comum: autorização por papel e por caso · criptografia de campos · jobs · rate limit e antispam · logs sem dados pessoais"]
+        subgraph MI["Identidade"]
+            I1["cadastro, login, MFA"]
+            I2["profissionais e verificação da OAB"]
+        end
+        subgraph MC["Casos"]
+            C1["denúncias e classificação"]
+            C2["provas"]
+            C3["moderação"]
+        end
+        subgraph MA["Assistencia"]
+            A1["interesse e autorização"]
+            A2["atendimentos"]
+            A3["notificações em rodízio · F2"]
+            A4["avaliações · F2"]
+        end
+        subgraph MP["Plataforma · F3"]
+            P1["doações, fundo, transparência, publicidade"]
+        end
+        COMUM["Comum: autorização por caso · cifra de campos · auditoria · rate limit"]
     end
 
-    subgraph Dados["Dados e infraestrutura (mesmo VPS)"]
-        PG[("PostgreSQL<br/>EF Core, backup diário cifrado")]
-        FS[("Arquivos de provas<br/>disco cifrado; depois S3 barato")]
-        JOBS["Hangfire no Postgres<br/>e-mails, antivírus, rodízio"]
-        KEYS["Data Protection do .NET<br/>chave fora do banco"]
+    subgraph Infra["No mesmo VPS"]
+        PG[("PostgreSQL<br/>dados + fila do Hangfire")]
+        FS[("Disco cifrado<br/>arquivos de provas")]
+        AV["ClamAV<br/>antivírus"]
     end
 
     subgraph Externos["Serviços externos"]
-        E1["gov.br<br/>validação de identidade"]
-        E2["CNA / OAB<br/>situação da inscrição"]
-        E3["E-mail e SMS"]
-        E4["Pagamentos PIX e cartão · F3"]
-        E5["ClamAV<br/>antivírus no mesmo VPS"]
+        E1["SMTP<br/>e-mails"]
+        E2["Gateway PIX e cartão · F3"]
+        E3["gov.br · F2, se aprovado"]
     end
 
     U1 & U2 & U3 & U4 --> FE
-    FE -->|HTTPS / JSON| API
-    API --> PG & FS & JOBS & KEYS
-    API -.-> E1 & E2 & E3 & E4 & E5
+    FE -->|"HTTPS /api"| API
+    API --> PG & FS & AV
+    API -.-> E1 & E2 & E3
 ```
 
-**Legenda:** F1, F2, F3 = fase do roadmap (MVP, operação, sustentabilidade). Linha tracejada = integração externa, opcional e substituível.
+**Legenda:** sem marcação = MVP (Fase 1). F2 e F3 = fases seguintes. Linha tracejada = serviço externo.
 
-## Implantação mínima
+A verificação da OAB é **manual** no MVP: o admin confere no site do CNA, que não tem API pública (ver [decisões](../decisoes.md), D9).
+
+## Implantação
 
 ```mermaid
 flowchart TB
     Internet((Internet)) --> Caddy
-    subgraph VPS["1 VPS de entrada · Docker Compose"]
-        Caddy["Caddy<br/>HTTPS grátis (Let's Encrypt)<br/>serve o Angular"] -->|/api| Api["API ASP.NET Core<br/>+ Hangfire"]
+    subgraph VPS["1 VPS · Docker Compose"]
+        Caddy["Caddy<br/>HTTPS automático<br/>serve o Angular"] -->|/api| Api["API ASP.NET Core<br/>+ Hangfire"]
         Api --> Pg[("PostgreSQL")]
-        Api --> Disco[("Volume de provas<br/>cifrado")]
+        Api --> Disco[("Volume de provas")]
         Api --> Clam["ClamAV"]
     end
-    Pg -. backup noturno cifrado .-> Backup[("Armazenamento externo barato")]
+    Pg -. backup noturno cifrado .-> Backup[("Armazenamento externo")]
     Disco -. backup noturno .-> Backup
-    Api -. SMTP .-> Email["E-mail transacional<br/>plano gratuito"]
+    Api -. SMTP .-> Email["Provedor de e-mail"]
 ```

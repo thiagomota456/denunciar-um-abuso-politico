@@ -23,7 +23,7 @@ Se dois documentos se contradizem, a ordem de prioridade é: `requisitos.md` > `
 | Camada | Tecnologia |
 |---|---|
 | Backend | C# / ASP.NET Core (.NET 10 LTS), EF Core, monólito modular |
-| Frontend | Angular (versão estável atual), standalone components, signals |
+| Frontend | Angular (a versão estável no momento da T0.1, registrada em `docs/decisoes.md`), standalone components, signals |
 | Banco | PostgreSQL 17 |
 | Jobs | Hangfire com storage no PostgreSQL |
 | Testes | xUnit, Testcontainers, `WebApplicationFactory`, Playwright |
@@ -38,11 +38,11 @@ Estas regras protegem pessoas reais que podem sofrer retaliação. Elas valem ma
 1. **Autorização sempre no backend.** Toda rota exige autenticação por padrão (`FallbackPolicy`). Rotas públicas são marcadas com `[AllowAnonymous]` explicitamente. Esconder um botão no Angular não é controle de acesso.
 2. **Acesso por caso, não só por papel.** Um profissional só lê dados privados de uma denúncia se existir uma `autorizacao` ativa (não revogada) para ele, e só os campos dentro do `escopo`. Siga a tabela de [permissões](docs/arquitetura/05-permissoes.md) célula por célula.
 3. **Profissional não verificado nunca acessa nada privado.** Nem com autorização.
-4. **Campos sensíveis são cifrados na aplicação** antes de ir para o banco: CPF, telefone, relato, envolvidos, testemunhas, contatos, capacidade financeira e texto das movimentações. A lista completa está no [modelo de dados](docs/arquitetura/04-modelo-de-dados.md) (campos marcados com "cifrado").
-5. **Provas nunca são servidas como arquivo estático.** Só por um endpoint que checa a autorização, gera um link de 5 minutos e grava o acesso na auditoria.
+4. **Campos sensíveis são cifrados na aplicação** antes de ir para o banco. A lista está no [modelo de dados](docs/arquitetura/04-modelo-de-dados.md) (campos marcados com "cifrado"). Campo cifrado não entra em `WHERE` nem `ORDER BY`.
+5. **Provas nunca são servidas como arquivo estático.** Só pelo endpoint da API que checa a autorização, devolve o arquivo e grava o acesso na auditoria.
 6. **Toda leitura de dado privado vai para `registro_auditoria`.** Toda autorização, revogação, edição e mudança de status também. A tabela é só INSERT.
 7. **Nunca registre dados pessoais em logs**, mensagens de erro, URLs ou query strings. Use IDs.
-8. **O resumo público só aparece depois da moderação.** Status `publicada` só é atribuído pelo módulo de Moderação.
+8. **O resumo público só aparece depois da moderação.** Só o caso de uso de publicação, restrito ao papel moderador, muda o status para `publicada`.
 9. **Sem captação de clientela.** Nenhum recurso que permita a um profissional pagar por prioridade, destaque ou acesso a casos.
 10. **Neutralidade política.** Seeds, textos de exemplo, testes e interface não podem citar partidos, políticos ou posições políticas reais.
 
@@ -56,7 +56,7 @@ Estas regras protegem pessoas reais que podem sofrer retaliação. Elas valem ma
 
 ## Comandos
 
-Disponíveis depois da tarefa T0.1 (ver `Makefile`):
+Disponíveis depois da tarefa T0.1 (ver `Makefile`). `make dev` só precisa de Docker; `make test` também precisa do SDK do .NET e do Node instalados.
 
 ```bash
 make dev        # sobe tudo com hot reload

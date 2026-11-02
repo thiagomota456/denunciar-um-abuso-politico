@@ -12,7 +12,8 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 
 - **Ler:** [infraestrutura.md](infraestrutura.md) (seções 4 a 8), [convencoes.md](convencoes.md).
 - **Entregar:**
-  - `src/backend/Denuncias.sln` com os projetos `Api`, `Comum`, `Modulos/Identidade`, `Modulos/Casos`, `Modulos/Assistencia`, `Modulos/Plataforma` e os três projetos de teste.
+  - `src/backend/Denuncias.sln` com os projetos `Api`, `Comum`, `Modulos/Identidade`, `Modulos/Casos`, `Modulos/Assistencia` e os três projetos de teste.
+  - Registrar em `docs/decisoes.md` a versão do Angular usada.
   - `src/frontend` com Angular (standalone, roteamento, as quatro áreas lazy vazias e `styles/tokens.css`).
   - Dockerfiles com estágios `dev` e `final`; `compose.yaml`, `compose.dev.yaml`, `compose.prod.yaml`; `deploy/Caddyfile`; `.env.example`; `Makefile`.
   - Endpoint anônimo `GET /api/v1/saude` que responde `{ "status": "ok" }` e checa a conexão com o banco.
@@ -29,15 +30,15 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
   - `FallbackPolicy` exigindo usuário autenticado.
   - Atributo `[Cifrado]` + value converter do EF Core com Data Protection; chaves persistidas em `DataProtection__KeysPath`.
   - Serviço de hash HMAC para CPF.
-  - `IAuditoria` + tabela `registro_auditoria` só com INSERT (o usuário de banco da aplicação sem UPDATE/DELETE nela).
+  - `IAuditoria` + `AuditoriaDbContext` (schema `auditoria`) + trigger que recusa UPDATE e DELETE em `registro_auditoria`.
   - Tratamento de erros em `ProblemDetails`, sem detalhes internos em produção.
-  - Logs estruturados com filtro que impede gravar campos `[Cifrado]`, CPF, e-mail e telefone.
+  - Log de requisições sem corpo e sem query string; nos logs da aplicação, só IDs.
   - Rate limiter nomeado para login, cadastro e upload.
   - Teste de arquitetura: um módulo não referencia o interior de outro.
 - **Aceite:**
   - Teste prova que um campo `[Cifrado]` gravado não aparece em texto puro numa consulta SQL direta.
   - Teste prova que uma rota sem `[AllowAnonymous]` responde 401 para anônimo.
-  - Teste prova que a aplicação não consegue fazer UPDATE nem DELETE em `registro_auditoria`.
+  - Teste prova que UPDATE e DELETE em `registro_auditoria` falham.
 
 ### [ ] T0.3 Seed de desenvolvimento
 
@@ -58,14 +59,14 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 ### [ ] T1.2 Cadastro de profissional
 
 - **Ler:** [requisitos.md](requisitos.md) §4, modelo de dados (`profissional`, `escritorio`).
-- **Entregar:** cadastro com número e UF da OAB, áreas, abrangência, disponibilidade, aceita gratuito, site e redes; escritório opcional com CNPJ. Status inicial: não verificado. MFA obrigatório.
+- **Entregar:** cadastro com número e UF da OAB, áreas, UFs atendidas, disponibilidade, aceita gratuito, site e redes; escritório opcional com CNPJ. Status inicial: não verificado. MFA obrigatório.
 - **Aceite:** profissional não verificado não aparece em busca nenhuma e recebe 404 em qualquer dado privado (teste).
 
 ### [ ] T1.3 Verificação de profissionais pelo admin
 
 - **Ler:** [decisoes.md](decisoes.md) D9.
-- **Entregar:** fila de profissionais pendentes no painel admin; aprovar (com anexo do comprovante da consulta ao CNA) ou recusar com motivo; e-mail ao profissional.
-- **Aceite:** só admin acessa. Aprovação grava `verificado_em`, `verificado_por` e auditoria.
+- **Entregar:** fila de profissionais pendentes no painel admin, com link para a consulta no site do CNA; aprovar ou recusar com observação; e-mail ao profissional.
+- **Aceite:** só admin acessa. Aprovação grava `verificado_em`, `verificado_por`, `observacao_verificacao` e auditoria.
 
 ### [ ] T1.4 Registro de denúncia em etapas
 
@@ -77,7 +78,7 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 
 - **Ler:** regra 5 do [AGENTS.md](../AGENTS.md), [decisoes.md](decisoes.md) D6 e D8, modelo de dados (`prova`).
 - **Entregar:** upload com limite de tamanho e tipos permitidos (PDF, imagens, áudio, vídeo, verificados pelo conteúdo e não só pela extensão), SHA-256, gravação cifrada em disco atrás de `IArmazenamentoProvas`, job do Hangfire que passa no ClamAV, listagem e remoção pelo dono.
-- **Aceite:** arquivo infectado fica `bloqueado` e nunca pode ser baixado. Não existe URL estática para nenhuma prova.
+- **Aceite:** arquivo infectado fica `bloqueado` e nunca pode ser baixado. Não existe URL estática para nenhuma prova. Com `ClamAv__Habilitado=false` (só permitido em Development), a prova vai direto para `limpo`.
 
 ### [ ] T1.6 Moderação
 
@@ -106,8 +107,8 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 ### [ ] T1.10 Acesso do profissional autorizado e atendimento
 
 - **Ler:** regras 2, 5 e 6 do [AGENTS.md](../AGENTS.md), modelo de dados (`atendimento`).
-- **Entregar:** tela do caso com só os dados do escopo; download de prova por link de 5 minutos; abertura de atendimento (`avaliando` → `formalizado` ou `encerrado`).
-- **Aceite:** campo fora do escopo nunca vem na resposta. Link expirado responde 404. Cada leitura e download vai para a auditoria.
+- **Entregar:** tela do caso com só os dados do escopo; download de prova pelo endpoint autorizado; abertura de atendimento (`avaliando` → `formalizado` ou `encerrado`).
+- **Aceite:** campo fora do escopo nunca vem na resposta. Depois da revogação, leitura e download respondem 404. Cada leitura e download vai para a auditoria.
 
 ### [ ] T1.11 Painel administrativo básico
 
@@ -119,7 +120,7 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 
 - **Ler:** [requisitos.md](requisitos.md) §9.
 - **Entregar:** "baixar meus dados" (JSON com tudo do titular); pedido de exclusão de conta que anonimiza o que pode ser apagado e mantém o que a lei obriga a guardar; página de política de privacidade com `[PREENCHER: texto jurídico]`; o denunciante vê quem acessou seus dados.
-- **Aceite:** depois da exclusão, nenhum dado pessoal do titular é legível; a auditoria continua íntegra, com o ator anonimizado.
+- **Aceite:** depois da exclusão, nenhum dado pessoal do titular é legível. A auditoria não muda: ela só guarda IDs, e o usuário por trás do ID foi anonimizado.
 
 ### [ ] T1.13 Testes de ponta a ponta e matriz de permissões completa
 
@@ -130,7 +131,7 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 ### [ ] T1.14 Deploy
 
 - **Ler:** [infraestrutura.md](infraestrutura.md) seções 5 e 9.
-- **Entregar:** imagem de produção do Caddy com o build do Angular; `deploy/backup.sh` (pg_dump cifrado + volumes `provas` e `chaves`, guardando 30 dias); `deploy/restaurar.sh`; passo a passo de servidor novo em `docs/deploy.md`.
+- **Entregar:** imagem de produção do Caddy com o build do Angular; `deploy/backup.sh` (pg_dump cifrado + volumes `provas` e `chaves`, guardando 30 dias); `deploy/restaurar.sh`; seção 9 de `docs/infraestrutura.md` atualizada com o passo a passo real.
 - **Aceite:** um servidor limpo fica no ar seguindo o passo a passo. Uma restauração de backup num banco vazio foi testada e documentada.
 
 ---

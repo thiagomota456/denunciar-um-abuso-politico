@@ -10,14 +10,14 @@ src/backend/
 ├── Api/                              # host: Program.cs, registro dos módulos, middlewares
 ├── Comum/                            # usado por todos os módulos
 │   ├── Cifra/                        # atributo [Cifrado], value converter, hash HMAC
-│   ├── Auditoria/                    # IAuditoria, entidade registro_auditoria
+│   ├── Auditoria/                    # IAuditoria, AuditoriaDbContext (schema auditoria)
 │   ├── Autorizacao/                  # policies e handlers por caso
-│   └── Web/                          # ProblemDetails, paginação, filtros
+│   └── Web/                          # ProblemDetails, paginação
 ├── Modulos/
-│   ├── Identidade/                   # schema identidade
-│   ├── Casos/                        # schema casos
-│   ├── Assistencia/                  # schema assistencia
-│   └── Plataforma/                   # schema plataforma
+│   ├── Identidade/                   # cadastro, login, profissionais e verificação
+│   ├── Casos/                        # denúncias, provas, classificação, moderação
+│   └── Assistencia/                  # interesse, autorização, atendimento; notificações e avaliações na F2
+│                                     # Plataforma/ (doações, fundo) só é criado na Fase 3
 └── tests/
     ├── Unitarios/
     ├── Integracao/
@@ -50,12 +50,14 @@ Modulos/Casos/
 - Paginação: `?pagina=1&tamanho=20`, máximo 100. Resposta `{ itens, total, pagina, tamanho }`.
 - Validação com a validação nativa do ASP.NET Core para Minimal APIs (atributos nos DTOs de entrada).
 - Endpoints de dados privados recebem o ID do caso na rota, e a policy checa a autorização daquele caso.
+- Documento OpenAPI nativo em `/openapi/v1.json`, só em Development.
 
 ## Banco
 
 - Tabelas e colunas em `snake_case`, nomes em português sem acento (ver [modelo de dados](arquitetura/04-modelo-de-dados.md)).
-- Um schema e um `DbContext` por módulo. Migrations ficam no `Infra/Migrations` do módulo.
-- Campos sensíveis: propriedade com `[Cifrado]`. A coluna recebe o texto cifrado; o nome da coluna termina em `_cifrado`.
+- Um schema e um `DbContext` por módulo. Migrations ficam no `Infra/Migrations` do módulo. A API aplica todas ao subir em Development; em produção, pelo comando `migrate`.
+- Referência a tabela de outro módulo é só o ID, sem chave estrangeira no banco.
+- Campos sensíveis: propriedade com `[Cifrado]`. A coluna recebe o texto cifrado; o nome da coluna termina em `_cifrado`. Não dá para filtrar por ela: se precisar filtrar, a informação vai numa coluna comum e deixa de ser sensível (ex.: `denuncia.precisa_gratuito`).
 - Busca por CPF: coluna `cpf_hash` com HMAC-SHA256 (chave em `Cifra__ChaveHmac`), nunca o CPF puro.
 - Nada de exclusão física de denúncia, prova ou auditoria pela aplicação. Exclusão a pedido do titular segue a política LGPD (tarefa T1.12).
 
@@ -94,8 +96,8 @@ src/frontend/src/app/
 
 ## Autenticação
 
-- ASP.NET Core Identity com **cookie** `HttpOnly`, `Secure`, `SameSite=Strict`. O Angular e a API ficam no mesmo domínio (o Caddy faz o proxy de `/api`), então não há JWT.
-- Proteção contra CSRF com antiforgery do ASP.NET Core + suporte a XSRF do `HttpClient` do Angular.
+- ASP.NET Core Identity com **cookie** `HttpOnly`, `Secure`, `SameSite=Lax`. O Angular e a API ficam no mesmo domínio (o Caddy faz o proxy de `/api`), então não há JWT. E-mail, senha, MFA e bloqueio usam as colunas do próprio Identity; os papéis usam as roles do Identity.
+- Proteção contra CSRF: antiforgery do ASP.NET Core com cookie `XSRF-TOKEN` e header `X-XSRF-TOKEN`, que o `HttpClient` do Angular envia sozinho.
 - MFA com app autenticador (TOTP): opcional para denunciante, obrigatório para profissional, moderador e admin.
 - Rate limit no login, no cadastro e no upload.
 

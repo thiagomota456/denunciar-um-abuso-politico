@@ -24,7 +24,7 @@ Custos que ficam **de fora** do MVP de propósito:
 - **SMS:** cobrado por mensagem. Use e-mail + app autenticador.
 - **Validação de CPF na Receita** (ex.: APIs pagas do Serpro): cobrada por consulta. No MVP, valide os dígitos do CPF, confirme e-mail e telefone e deixe a validação definitiva para o profissional, como o briefing já prevê.
 - **Login gov.br:** a integração com o Login Único passa por um processo de adesão e pode não estar disponível para uma entidade privada. Trate como Fase 2, se aprovado.
-- **Consulta à OAB (CNA):** não há API pública oficial. No MVP, o admin verifica manualmente no site do CNA e anexa o comprovante ao registro do profissional. Não automatize contornando o captcha do site.
+- **Consulta à OAB (CNA):** não há API pública oficial. No MVP, o admin verifica manualmente no site do CNA e registra a data e uma observação no cadastro do profissional. Não automatize contornando o captcha do site.
 
 ## 2. Qual VPS escolher
 
@@ -61,7 +61,7 @@ As mesmas variações em `.com.br` também estavam livres.
 **Recomendação:** `denuncieumabuso.org.br` como principal, mais o `.com.br` do mesmo nome apontando para ele (R$ 80/ano no total).
 
 - **`.org.br` exige o CNPJ de uma entidade sem fins lucrativos.** Enquanto a associação não tiver CNPJ, registre o `.com.br` com o CPF de um responsável e migre depois.
-- A consulta mostra só o que estava livre naquele momento. Registre logo no [registro.br](https://registro.br) e ative a renovação automática: o domínio é liberado 60 dias após expirar.
+- A consulta mostra só o que estava livre naquele momento. Registre logo no [registro.br](https://registro.br) e ative a renovação automática: um domínio que expira volta a ficar disponível para qualquer pessoa.
 
 ## 4. Organização do repositório
 
@@ -75,8 +75,7 @@ As mesmas variações em `.com.br` também estavam livres.
 │   │   ├── Modulos/
 │   │   │   ├── Identidade/          # cada módulo: Contratos, Dominio, Aplicacao, Infra, Endpoints
 │   │   │   ├── Casos/
-│   │   │   ├── Assistencia/
-│   │   │   └── Plataforma/
+│   │   │   └── Assistencia/         # Plataforma/ só na Fase 3
 │   │   └── tests/
 │   │       ├── Unitarios/
 │   │       ├── Integracao/          # Testcontainers + WebApplicationFactory
@@ -125,7 +124,8 @@ services:
       retries: 10
 
   api:
-    build: ./src/backend
+    build:
+      context: ./src/backend
     env_file: .env
     environment:
       ConnectionStrings__Default: Host=db;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
@@ -306,7 +306,7 @@ Regras práticas:
 
 ## 8. Rodar em desenvolvimento
 
-Pré-requisitos: Docker e Git. Não é preciso instalar .NET, Node nem PostgreSQL na máquina.
+Para rodar o sistema: só Docker e Git. Para rodar os testes (`make test`) também é preciso o SDK do .NET 10 e o Node; os testes de integração usam o Docker para subir um PostgreSQL temporário.
 
 ```bash
 git clone https://github.com/thiagomota456/denunciar-um-abuso-politico.git
@@ -325,7 +325,7 @@ Depois disso:
 | Endereço | O quê |
 |---|---|
 | http://localhost:4200 | Angular |
-| http://localhost:8080/swagger | API |
+| http://localhost:8080/openapi/v1.json | descrição da API (OpenAPI) |
 | http://localhost:8025 | e-mails enviados (Mailpit) |
 | `localhost:5432` | PostgreSQL |
 

@@ -1,6 +1,16 @@
 # 4 · Modelo de dados (PostgreSQL + EF Core)
 
-Um schema por módulo e um DbContext por schema: `identidade`, `casos`, `assistencia`, `plataforma`. Campos marcados como "cifrado" são criptografados na aplicação e ficam ilegíveis mesmo para quem acessar o banco.
+Um schema por módulo, cada um com seu `DbContext`:
+
+| Schema | Dono | Tabelas |
+|---|---|---|
+| `identidade` | módulo Identidade | tabelas do ASP.NET Core Identity, `perfil_denunciante`, `profissional`, `escritorio` |
+| `casos` | módulo Casos | `denuncia`, `denuncia_privada`, `capacidade_financeira`, `prova`, `moderacao` |
+| `assistencia` | módulo Assistencia | `interesse`, `autorizacao`, `atendimento`, `movimentacao`, `avaliacao`, `notificacao` |
+| `auditoria` | Comum | `registro_auditoria` |
+| `plataforma` | módulo Plataforma (Fase 3) | `doacao`, `lancamento`, `apoio_fundo` |
+
+Campos com "cifrado" são criptografados na aplicação e ficam ilegíveis para quem acessar o banco ou um backup. Por isso **não dá para filtrar nem ordenar por eles em SQL**: tudo que precisa entrar num `WHERE` fica em coluna comum.
 
 ```mermaid
 erDiagram
@@ -9,8 +19,9 @@ erDiagram
     escritorio |o--o{ profissional : agrupa
     usuario ||--o{ denuncia : registra
     denuncia ||--|| denuncia_privada : tem
-    denuncia ||--o{ prova : tem
     denuncia ||--o| capacidade_financeira : tem
+    denuncia ||--o{ prova : tem
+    denuncia ||--o{ moderacao : passa_por
     denuncia ||--o{ interesse : recebe
     profissional ||--o{ interesse : manifesta
     interesse ||--o| autorizacao : gera
@@ -19,38 +30,30 @@ erDiagram
     atendimento ||--o| avaliacao : recebe
     profissional ||--o{ notificacao : recebe
     denuncia ||--o{ notificacao : origina
-    denuncia ||--o{ moderacao : passa_por
-    usuario ||--o{ registro_auditoria : gera
-    denuncia ||--o{ apoio_fundo : recebe
 
     usuario {
-        uuid id PK
+        uuid id PK "IdentityUser: e-mail, senha, MFA e bloqueio ficam nas colunas do Identity"
         string nome
         string cpf_cifrado "cifrado"
-        string cpf_hash UK "para busca"
-        string email UK
-        string telefone_cifrado "cifrado"
-        string papel "denunciante, profissional, moderador, admin"
-        string senha_hash
-        bool mfa_ativo
-        timestamp identidade_verificada_em
+        string cpf_hash UK "HMAC, para checar duplicidade"
+        string telefone_cifrado "cifrado; não usar PhoneNumber do Identity"
+        timestamp criado_em
     }
     perfil_denunciante {
         uuid usuario_id PK, FK
         string municipio
         string uf
-        string contato_seguranca_cifrado "cifrado"
     }
     profissional {
         uuid usuario_id PK, FK
         uuid escritorio_id FK
         string oab_numero
         string oab_uf
-        string oab_situacao
-        timestamp verificado_em
+        timestamp verificado_em "nulo = não verificado"
         uuid verificado_por
+        string observacao_verificacao
         string_array areas
-        jsonb abrangencia "UFs e municípios"
+        string_array ufs_atendidas
         bool aceita_novos_casos
         bool aceita_gratuito
         jsonb site_redes
@@ -75,6 +78,7 @@ erDiagram
         string status "rascunho, em_revisao, publicada, em_atendimento, encerrada"
         bool anonimo
         int urgencia "1 a 3"
+        bool precisa_gratuito "não público; usado no filtro de profissionais"
         timestamp publicada_em
     }
     denuncia_privada {
@@ -83,25 +87,33 @@ erDiagram
         text envolvidos_cifrado "cifrado"
         text testemunhas_cifrado "cifrado"
     }
-    prova {
-        uuid id PK
-        uuid denuncia_id FK
-        string tipo "documento, foto, audio, video"
-        string caminho_arquivo "cifrado em disco"
-        string sha256 "integridade"
-        bigint tamanho_bytes
-        string antivirus "pendente, limpo, bloqueado"
-    }
     capacidade_financeira {
         uuid denuncia_id PK, FK
         string pode_pagar_cifrado "cifrado"
         string faixa_valor_cifrado "cifrado"
-        string precisa_gratuito_cifrado "cifrado"
         string pede_apoio_fundo_cifrado "cifrado"
+    }
+    prova {
+        uuid id PK
+        uuid denuncia_id FK
+        string tipo "documento, foto, audio, video"
+        string nome_original_cifrado "cifrado"
+        string caminho_arquivo "arquivo cifrado em disco"
+        string sha256 "integridade"
+        bigint tamanho_bytes
+        string antivirus "pendente, limpo, bloqueado"
+    }
+    moderacao {
+        uuid id PK
+        uuid denuncia_id FK
+        uuid moderador_id
+        string decisao "publicar, devolver"
+        string motivo
+        timestamp em
     }
     interesse {
         uuid id PK
-        uuid denuncia_id FK
+        uuid denuncia_id FK "único com profissional_id"
         uuid profissional_id FK
         text mensagem
         string status "aberto, aceito, recusado"
@@ -122,8 +134,7 @@ erDiagram
     movimentacao {
         uuid id PK
         uuid atendimento_id FK
-        uuid autor_id FK
-        string tipo
+        uuid autor_id
         text texto_cifrado "cifrado"
         timestamp criado_em
     }
@@ -140,49 +151,13 @@ erDiagram
         uuid profissional_id FK
         uuid denuncia_id FK
         int lote
-        string criterio
         timestamp enviada_em
-        timestamp aberta_em
-    }
-    registro_auditoria {
-        bigint id PK
-        uuid ator_id FK
-        string acao
-        string recurso
-        string recurso_id
-        string ip_hash
-        timestamp em "só INSERT"
-    }
-    moderacao {
-        uuid id PK
-        uuid denuncia_id FK
-        uuid moderador_id FK
-        string decisao
-        string motivo
-        timestamp em
-    }
-    doacao {
-        uuid id PK
-        decimal valor
-        string meio "pix, cartao"
-        string id_gateway
-        timestamp em
-    }
-    lancamento {
-        uuid id PK
-        string tipo "receita, despesa, fundo"
-        string categoria
-        decimal valor
-        date data
-        string comprovante
-    }
-    apoio_fundo {
-        uuid id PK
-        uuid denuncia_id FK
-        decimal valor_aprovado
-        string criterio
-        timestamp decidido_em
     }
 ```
 
-`doacao`, `lancamento` e `apoio_fundo` entram na Fase 3. A tabela `registro_auditoria` só aceita INSERT: o usuário de banco da aplicação não tem permissão de UPDATE nem DELETE nela.
+Tabelas fora do diagrama:
+
+- **`auditoria.registro_auditoria`**: `id bigserial`, `ator_id uuid`, `acao`, `recurso`, `recurso_id`, `em`. Um trigger no banco recusa UPDATE e DELETE. Guarda só IDs, nunca dados pessoais.
+- **Fase 3, schema `plataforma`**: `doacao` (valor, meio, id no gateway, data), `lancamento` (tipo receita/despesa/fundo, categoria, valor, data, comprovante) e `apoio_fundo` (denuncia_id, valor aprovado, critério, data da decisão).
+
+Referências entre schemas (ex.: `denuncia.autor_id` → usuário) são só IDs, sem chave estrangeira no banco: cada módulo é dono das suas tabelas.
