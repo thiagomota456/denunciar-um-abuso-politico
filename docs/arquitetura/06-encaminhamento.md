@@ -83,7 +83,7 @@ Uma entidade ou canal sem `fonte_url` não é publicado. Canal importado do CNES
 - **Job mensal** testa as URLs dos canais e marca as que falham. E-mails devolvidos (bounce) marcam o canal.
 - Canal com `conferido_em` com mais de 12 meses entra na fila de revisão da moderação.
 - O CNES é reimportado a cada 3 meses. A importação é idempotente (chave: código sindical ou CNPJ).
-- Usuários podem sugerir uma entidade ou apontar um canal desatualizado. A sugestão vai para a moderação e nunca entra direto no catálogo.
+- Usuários podem pedir uma entidade, profissão ou tipo de abuso novo, ou apontar um canal desatualizado, pelo [fale conosco](../faq.md#sugestões-reclamações-e-pedidos). O pedido vai para a moderação e nunca entra direto no catálogo.
 
 ## 2. Recomendação de destinatários
 
@@ -98,7 +98,7 @@ Consulta SQL sobre `regra_competencia` e `entidade`, sem IA. Entradas, todas em 
 | `uf`, `municipio_ibge` | onde os fatos aconteceram |
 | `afeta_varias_pessoas` | se atinge um grupo de trabalhadores |
 
-Saída: lista sem duplicatas, cada item com a entidade, o canal recomendado, a natureza e **o motivo em linguagem simples** ("O MPT investiga assédio eleitoral contra trabalhadores do setor privado"). A ordem segue as diretrizes: primeiro quem recebe denúncias e fiscaliza ou investiga, depois representação, depois acolhimento.
+Saída: lista sem duplicatas, cada item com a entidade, o canal recomendado, a natureza e **o motivo em linguagem simples** ("O MPT investiga assédio eleitoral contra trabalhadores do setor privado"). A ordem vem da coluna `prioridade` de cada regra, que segue as diretrizes: primeiro quem recebe denúncias e fiscaliza ou investiga, depois representação, depois acolhimento e assistência jurídica.
 
 **Sindicatos** são o ponto fraco da automação: o CNES descreve a categoria em texto livre e há milhares de bases territoriais. A plataforma sugere os sindicatos da base territorial cuja categoria bate por busca de texto do PostgreSQL, marca como "possível" e pede confirmação: "O nome do sindicato costuma aparecer no contracheque ou na convenção coletiva".
 
@@ -118,7 +118,8 @@ O arquivo [`regras-competencia.csv`](../../dados/catalogo/regras-competencia.csv
 | Assédio moral ou sexual, CLT | MPT · Inspeção do Trabalho · sindicato |
 | Conduta antiética de profissional regulamentado | Conselho regional da profissão na UF |
 | Violação de direitos humanos por agente público | Disque 100 · MPF ou MP do estado · Defensoria |
-| Qualquer caso que peça reparação individual | Defensoria Pública ou advogado da plataforma (módulo Assistencia) |
+
+Toda recomendação termina também com o caminho da ação individual, para quem quer reparação: a Defensoria Pública da UF ou um advogado da plataforma (módulo Assistencia).
 
 Servidor estatutário não vai para o MPT: a Justiça do Trabalho não julga a relação estatutária. As regras são dados, não código: corrigir uma regra é editar o CSV ou o painel, sem deploy.
 
@@ -148,8 +149,8 @@ Para cada destinatário, o denunciante escolhe uma opção, limitada ao que o ca
 | Opção | O que vai no dossiê | Quando aparece |
 |---|---|---|
 | `identificado` | Nome, CPF e contato | Sempre |
-| `sigiloso` | Nome, CPF e contato, com pedido expresso de sigilo | Se `canal.aceita_sigilo` |
-| `anonimo` | Nenhum dado pessoal. O e-mail sai da plataforma | Se `canal.aceita_anonimo` |
+| `sigiloso` | Nome, CPF e contato, com pedido expresso de sigilo | Se `canal.aceita_sigilo` = `sim` |
+| `anonimo` | Nenhum dado pessoal. O e-mail sai da plataforma | Se `canal.aceita_anonimo` = `sim` |
 
 Avisos obrigatórios na tela de escolha:
 
@@ -161,7 +162,7 @@ Avisos obrigatórios na tela de escolha:
 
 | Modo | Quando | O que a plataforma faz | O que o denunciante faz |
 |---|---|---|---|
-| `email` | O canal aceita denúncia por e-mail, conferido pela moderação | Envia do endereço da plataforma, com as provas anexas até o limite do canal e um endereço de resposta único | Autoriza |
+| `email` | O canal aceita denúncia por e-mail, conferido pela moderação | Envia do endereço da plataforma, com as provas anexas até o limite do canal e de `Encaminhamento__TamanhoMaximoEmailMb`, e um endereço de resposta único | Autoriza |
 | `assistido` | Formulário oficial com login gov.br, captcha ou sem integração | Abre o link oficial e mostra cada campo do formulário com o texto pronto para copiar e as provas para baixar | Preenche e envia no site oficial, depois registra o protocolo e anexa o comprovante |
 | `orientacao` | Telefone, WhatsApp, presencial ou correio | Mostra o roteiro, o horário e o dossiê para imprimir | Faz o contato e registra o protocolo |
 | `api` | Só se uma entidade oferecer API para terceiros | Implementação nova de `ICanalEnvio` | Autoriza |
@@ -174,10 +175,10 @@ Avisos obrigatórios na tela de escolha:
 
 ### Envio para vários destinatários
 
-- O denunciante marca vários destinatários e revisa um dossiê por destinatário. Pode autorizar um por um ou todos de uma vez, com uma única confirmação de senha.
+- O denunciante marca vários destinatários e revisa um dossiê por destinatário. Pode autorizar um por um ou marcar cada um e confirmar todos com a senha uma vez só.
 - Um encaminhamento ativo por par caso e entidade (índice único). Reenviar exige cancelar o anterior com motivo.
 - Limites configuráveis: envios por usuário por dia e e-mails da plataforma por entidade por dia.
-- **Envio automático exige caso revisado pela moderação** (status `publicada` ou `aprovada`). Isso protege as entidades de spam e a plataforma de uso abusivo. O modo assistido não exige revisão, porque quem envia é o próprio denunciante.
+- **Envio automático exige caso aprovado pela moderação** (decisão `publicar` ou `aprovar_sem_publicar` registrada em `moderacao`; vale também para casos já em atendimento ou encerrados). Isso protege as entidades de spam e a plataforma de uso abusivo. O modo assistido não exige revisão, porque quem envia é o próprio denunciante.
 - O job de envio é idempotente: o `Message-ID` do e-mail é derivado do ID do encaminhamento, então uma nova tentativa não duplica o envio.
 
 ## 6. Acompanhamento

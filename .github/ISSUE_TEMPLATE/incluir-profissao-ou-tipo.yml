@@ -1,0 +1,29 @@
+name: Incluir profissão ou tipo de abuso
+description: Pedir uma classe profissional ou um tipo de abuso que falta nas opções.
+title: "Incluir: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **No GitHub tudo é público.** Não conte o seu caso aqui. Descreva só a profissão ou o tipo de abuso em termos gerais.
+  - type: dropdown
+    id: pedido
+    attributes:
+      label: O que falta?
+      options:
+        - Profissão ou classe profissional
+        - Tipo de abuso
+    validations:
+      required: true
+  - type: input
+    id: nome
+    attributes:
+      label: Nome
+      placeholder: "Ex.: Técnico ou técnica em segurança do trabalho"
+    validations:
+      required: true
+  - type: textarea
+    id: competencia
+    attributes:
+      label: Quem pode agir nesses casos?
+      description: Conselho, sindicato ou órgão que fiscaliza essa profissão ou recebe esse tipo de denúncia, com o link oficial, se souber.

@@ -15,6 +15,7 @@ Plataforma web, apartidária e sem fins lucrativos, para cidadãos denunciarem a
 5. [docs/tarefas.md](docs/tarefas.md): backlog em ordem. **Trabalhe uma tarefa por vez, na ordem.**
 6. [docs/infraestrutura.md](docs/infraestrutura.md): Docker, `.env`, testes, deploy.
 7. [docs/glossario.md](docs/glossario.md): termos do domínio.
+8. [docs/faq.md](docs/faq.md): texto da página de perguntas frequentes. Ele descreve o comportamento prometido ao usuário: o código precisa bater com ele.
 
 Se dois documentos se contradizem, a ordem de prioridade é: `requisitos.md` > `decisoes.md` > `arquitetura/` > o resto. Aponte a contradição em vez de escolher em silêncio.
 

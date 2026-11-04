@@ -113,22 +113,39 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 ### [ ] T1.11 Painel administrativo básico
 
 - **Ler:** [requisitos.md](requisitos.md) §12 (módulo administrativo).
-- **Entregar:** lista de usuários com bloqueio e desbloqueio; consulta da auditoria com filtros; botão "reportar conteúdo abusivo" nas páginas públicas e fila desses reportes para a moderação.
+- **Entregar:** lista de usuários com bloqueio e desbloqueio; consulta da auditoria com filtros.
 - **Aceite:** acesso do admin a identidade ou contato exige um motivo, que fica gravado na auditoria.
 
-### [ ] T1.12 Direitos do titular (LGPD)
+### [ ] T1.12 Perguntas frequentes, fale conosco e reportes
+
+- **Ler:** [faq.md](faq.md), [requisitos.md](requisitos.md) §9 e §16, [decisões](decisoes.md) D29, modelo de dados (`casos.manifestacao`), [permissões](arquitetura/05-permissoes.md) (linha "Manifestações").
+- **Entregar:**
+  - Página pública "Perguntas frequentes" com o texto de `docs/faq.md`, sem as seções de recursos que ainda não estão no ar.
+  - "Fale conosco" no rodapé de todas as páginas, público, com os tipos: dúvida, sugestão ou melhoria, reclamação, incluir entidade, incluir profissão ou tipo de abuso, corrigir dados de entidade. E-mail opcional para resposta. Pedidos de inclusão pedem também nome, UF e site oficial.
+  - Botão "Reportar" nas páginas públicas de denúncia, que cria uma manifestação `conteudo_abusivo` ligada ao caso.
+  - Usuário logado pode ligar a mensagem a um caso seu e acompanhar em "Minhas mensagens".
+  - Filas: a moderação trata `conteudo_abusivo`, `incluir_entidade`, `incluir_categoria` e `corrigir_catalogo`; o admin trata as demais. Responder grava a resposta, muda o status e manda e-mail se houver.
+  - Contra spam, sem captcha: rate limit por IP, campo isca escondido e tamanho máximo do texto.
+- **Aceite:**
+  - Visitante envia sem conta, e o único dado pessoal pedido é o e-mail opcional.
+  - A moderação não vê dúvidas, sugestões nem reclamações (teste).
+  - Ligar a mensagem a um caso de outra pessoa responde 404 (teste).
+  - Texto, e-mail e resposta gravados cifrados. Cada leitura pela equipe vai para a auditoria.
+  - Pedido de inclusão ou correção nunca altera o catálogo sozinho.
+
+### [ ] T1.13 Direitos do titular (LGPD)
 
 - **Ler:** [requisitos.md](requisitos.md) §9.
 - **Entregar:** "baixar meus dados" (JSON com tudo do titular); pedido de exclusão de conta que anonimiza o que pode ser apagado e mantém o que a lei obriga a guardar; página de política de privacidade com `[PREENCHER: texto jurídico]`; o denunciante vê quem acessou seus dados.
 - **Aceite:** depois da exclusão, nenhum dado pessoal do titular é legível. A auditoria não muda: ela só guarda IDs, e o usuário por trás do ID foi anonimizado.
 
-### [ ] T1.13 Testes de ponta a ponta e matriz de permissões completa
+### [ ] T1.14 Testes de ponta a ponta e matriz de permissões completa
 
 - **Ler:** [permissões](arquitetura/05-permissoes.md), [convencoes.md](convencoes.md) (Testes).
 - **Entregar:** teste parametrizado com todas as células da tabela de permissões; Playwright no fluxo principal: cadastrar → denunciar → moderar → publicar → manifestar interesse → autorizar → baixar prova → revogar.
 - **Aceite:** todos passam no CI. Quebrar qualquer policy faz pelo menos um teste falhar.
 
-### [ ] T1.14 Deploy
+### [ ] T1.15 Deploy
 
 - **Ler:** [infraestrutura.md](infraestrutura.md) seções 5 e 9.
 - **Entregar:** imagem de produção do Caddy com o build do Angular; `deploy/backup.sh` (pg_dump cifrado + volumes `provas` e `chaves`, guardando 30 dias); `deploy/restaurar.sh`; seção 9 de `docs/infraestrutura.md` atualizada com o passo a passo real.
@@ -138,7 +155,7 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 
 ## Fase 1B — Encaminhamento a órgãos e entidades
 
-Começa depois do deploy do MVP (T1.14). Leia antes [encaminhamento](arquitetura/06-encaminhamento.md), as regras 11 a 13 do [AGENTS.md](../AGENTS.md) e as decisões D21 a D28.
+Começa depois do deploy do MVP (T1.15). Leia antes [encaminhamento](arquitetura/06-encaminhamento.md), as regras 11 a 13 do [AGENTS.md](../AGENTS.md) e as decisões D21 a D28.
 
 ### [ ] T1B.1 Módulo e catálogo
 
@@ -146,7 +163,7 @@ Começa depois do deploy do MVP (T1.14). Leia antes [encaminhamento](arquitetura
 - **Entregar:**
   - Projeto `Modulos/Encaminhamento` com `EncaminhamentoDbContext` e as tabelas do catálogo (`entidade`, `canal`, `regra_competencia`, `categoria_profissional`, `modelo_documento`).
   - Comando `make importar-catalogo` que lê os CSV de `dados/catalogo/` e faz upsert.
-  - Telas da moderação para editar entidades, canais e regras, e fila de sugestões dos usuários.
+  - Telas da moderação para editar entidades, canais e regras. Na fila de manifestações de catálogo (T1.12), atalho para abrir a entidade e marcar o pedido como aceito ou recusado.
   - Endpoints públicos de leitura do catálogo.
 - **Aceite:**
   - A importação é idempotente: rodar duas vezes não duplica nada (teste).
@@ -187,7 +204,7 @@ Começa depois do deploy do MVP (T1.14). Leia antes [encaminhamento](arquitetura
 - **Entregar:** tela que mostra cada dossiê e pede a senha para autorizar um ou vários destinatários; gravação de `dossie_cifrado`, `dossie_sha256`, `versao_consentimento`; job do Hangfire que envia com MailKit, provas anexas até o limite do canal, `Reply-To` com o token e `Message-ID` derivado do ID do encaminhamento; limites por usuário e por entidade.
 - **Aceite:**
   - Sem autorização, nada é enviado (teste).
-  - Caso fora de `publicada` ou `aprovada` não envia por e-mail (teste).
+  - Caso sem decisão `publicar` ou `aprovar_sem_publicar` da moderação não envia por e-mail (teste).
   - Segundo encaminhamento ativo para a mesma entidade é recusado (teste).
   - Repetir o job não envia o e-mail duas vezes (teste com o Mailpit).
   - Entidade fora da recomendação do caso é recusada (teste).

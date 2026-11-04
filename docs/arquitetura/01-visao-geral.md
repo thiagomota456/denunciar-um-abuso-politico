@@ -22,7 +22,7 @@ flowchart LR
         subgraph MC["Casos"]
             C1["denúncias e classificação"]
             C2["provas"]
-            C3["moderação"]
+            C3["moderação e fale conosco"]
         end
         subgraph MA["Assistencia"]
             A1["interesse e autorização"]
@@ -51,7 +51,7 @@ flowchart LR
         E1["SMTP<br/>e-mails"]
         E2["Gateway PIX e cartão · F3"]
         E3["gov.br · F2, se aprovado"]
-        E7["Entidades que aceitam e-mail<br/>MP, conselhos, sindicatos · F1B"]
+        E7["Entidades com canal de e-mail<br/>conferido pela moderação · F1B"]
         E8["Caixa IMAP<br/>respostas das entidades · F1B"]
     end
 

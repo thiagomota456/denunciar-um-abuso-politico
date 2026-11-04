@@ -1,0 +1,27 @@
+name: Corrigir dados de entidade
+description: Informar um canal, endereço ou regra errada ou desatualizada no catálogo.
+title: "Corrigir: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **No GitHub tudo é público.** Não escreva dados pessoais nem detalhes de denúncias.
+  - type: input
+    id: entidade
+    attributes:
+      label: Entidade
+      description: Nome ou `id` da entidade em `dados/catalogo/entidades.csv`.
+    validations:
+      required: true
+  - type: textarea
+    id: erro
+    attributes:
+      label: O que está errado e qual é o dado certo?
+    validations:
+      required: true
+  - type: input
+    id: fonte
+    attributes:
+      label: Link oficial que mostra o dado certo
+    validations:
+      required: true

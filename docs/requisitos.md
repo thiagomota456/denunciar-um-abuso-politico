@@ -332,3 +332,9 @@ Ajustar o projeto para facilitar e automatizar o encaminhamento de denúncias a 
 - Não presumir que todas as instituições aceitam denúncias por e-mail ou permitem preenchimento automatizado.
 - Priorizar soluções simples, eficientes, escaláveis e de baixo custo operacional.
 - Preservar as funcionalidades existentes do projeto, integrando os novos recursos sem complexidade desnecessária.
+
+## 16. Perguntas frequentes e fale conosco (adendo)
+
+Pedido do mantenedor, acrescentado depois do briefing original. Texto da página em [faq.md](faq.md).
+
+Adicionar um FAQ para melhorias, sugestões, reclamações ou pedir para adicionar uma entidade ou classe.

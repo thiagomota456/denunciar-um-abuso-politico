@@ -287,6 +287,7 @@ Encaminhamento__Remetente=encaminhamentos@localhost
 Encaminhamento__DominioResposta=localhost
 Encaminhamento__LimiteDiarioPorUsuario=10
 Encaminhamento__LimiteDiarioPorEntidade=50
+Encaminhamento__TamanhoMaximoEmailMb=20
 Imap__Habilitado=false
 Imap__Host=
 Imap__Usuario=

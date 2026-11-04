@@ -1,0 +1,48 @@
+name: Incluir entidade
+description: Pedir a inclusão de um órgão, sindicato, conselho ou outra entidade que recebe denúncias.
+title: "Incluir entidade: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **No GitHub tudo é público.** Não escreva nomes de pessoas, CPF, telefone nem detalhes de denúncias. Informe só dados públicos da entidade.
+  - type: input
+    id: nome
+    attributes:
+      label: Nome da entidade
+      placeholder: "Ex.: Sindicato dos Trabalhadores em ... de ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo
+      options:
+        - Sindicato, federação ou confederação
+        - Conselho profissional
+        - Ministério Público
+        - Órgão de fiscalização
+        - Ouvidoria
+        - Defensoria Pública
+        - Outro
+    validations:
+      required: true
+  - type: input
+    id: abrangencia
+    attributes:
+      label: Cidade ou estado onde atua
+      placeholder: "Ex.: Belo Horizonte, MG ou todo o estado de MG"
+    validations:
+      required: true
+  - type: input
+    id: fonte
+    attributes:
+      label: Página oficial onde a entidade recebe denúncias
+      description: Link do site oficial ou de um documento oficial. Sem fonte oficial, a entidade não entra no catálogo.
+    validations:
+      required: true
+  - type: textarea
+    id: detalhes
+    attributes:
+      label: O que mais sabemos sobre o canal?
+      description: Aceita denúncia anônima? Precisa de login gov.br? Aceita e-mail? Que tipos de caso recebe?

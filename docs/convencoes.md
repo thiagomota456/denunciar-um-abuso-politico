@@ -15,7 +15,7 @@ src/backend/
 │   └── Web/                          # ProblemDetails, paginação
 ├── Modulos/
 │   ├── Identidade/                   # cadastro, login, profissionais e verificação
-│   ├── Casos/                        # denúncias, provas, classificação, moderação
+│   ├── Casos/                        # denúncias, provas, classificação, moderação, fale conosco
 │   ├── Assistencia/                  # interesse, autorização, atendimento; notificações e avaliações na F2
 │   └── Encaminhamento/               # catálogo de entidades, recomendação, dossiê, envio e acompanhamento (Fase 1B)
 │                                     # Plataforma/ (doações, fundo) só é criado na Fase 3
@@ -60,7 +60,7 @@ Modulos/Casos/
 - Referência a tabela de outro módulo é só o ID, sem chave estrangeira no banco.
 - Campos sensíveis: propriedade com `[Cifrado]`. A coluna recebe o texto cifrado; o nome da coluna termina em `_cifrado`. Não dá para filtrar por ela: se precisar filtrar, a informação vai numa coluna comum e deixa de ser sensível (ex.: `denuncia.precisa_gratuito`).
 - Busca por CPF: coluna `cpf_hash` com HMAC-SHA256 (chave em `Cifra__ChaveHmac`), nunca o CPF puro.
-- Nada de exclusão física de denúncia, prova ou auditoria pela aplicação. Exclusão a pedido do titular segue a política LGPD (tarefa T1.12).
+- Nada de exclusão física de denúncia, prova ou auditoria pela aplicação. Exclusão a pedido do titular segue a política LGPD (tarefa T1.13).
 
 ## Nomes em C#
 

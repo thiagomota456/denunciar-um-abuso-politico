@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Reclamação ou assunto sobre um caso
+    url: https://github.com/thiagomota456/denunciar-um-abuso-politico/blob/main/docs/faq.md#sugest%C3%B5es-reclama%C3%A7%C3%B5es-e-pedidos
+    about: No GitHub tudo é público. Para reclamações e qualquer assunto com dados pessoais ou detalhes de um caso, use o Fale conosco da plataforma.

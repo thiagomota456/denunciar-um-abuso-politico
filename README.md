@@ -13,7 +13,9 @@ Plataforma web, apartidária e sem fins lucrativos, para cidadãos denunciarem a
 
 Comece pelo [AGENTS.md](AGENTS.md): ordem de leitura, regras de segurança e como pegar a próxima tarefa em [docs/tarefas.md](docs/tarefas.md).
 
-- [Requisitos](docs/requisitos.md) · [Convenções](docs/convencoes.md) · [Decisões](docs/decisoes.md) · [Glossário](docs/glossario.md)
+- [Requisitos](docs/requisitos.md) · [Convenções](docs/convencoes.md) · [Decisões](docs/decisoes.md) · [Glossário](docs/glossario.md) · [Perguntas frequentes](docs/faq.md)
+
+Sugestões, reclamações e pedidos para incluir uma entidade, profissão ou tipo de abuso: veja [como fazer](docs/faq.md#sugestões-reclamações-e-pedidos). No GitHub, use os modelos de issue e nunca publique dados pessoais ou detalhes de um caso.
 
 ## Arquitetura
 

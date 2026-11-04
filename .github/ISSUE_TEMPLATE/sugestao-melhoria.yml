@@ -1,0 +1,20 @@
+name: Sugestão de melhoria
+description: Propor uma melhoria na plataforma ou na documentação.
+title: "Sugestão: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **No GitHub tudo é público.** Não escreva dados pessoais nem detalhes de denúncias. Para reclamações, use o Fale conosco da plataforma.
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qual problema a melhoria resolve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: O que você propõe?
+    validations:
+      required: true

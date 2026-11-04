@@ -27,7 +27,7 @@ O grupo vira entidade assim: `mpt`, `mp_estadual` e `defensoria_estadual` pela U
 ## O que já foi conferido (03/11/2026)
 
 - **Canais nacionais conferidos na fonte oficial:** Inspeção do Trabalho do MTE (denúncia geral, desigualdade salarial, Ipê trabalho escravo, Ipê trabalho infantil, assédio eleitoral), MPF Serviços e carta para denúncia anônima, MP Eleitoral via MPF Serviços, Disque 100 (telefone e WhatsApp), Fala.BR.
-- **MPT:** os 24 formulários regionais (`peticionamento.prtN.mpt.mp.br/denuncia`) responderam. Anonimato, anexos e protocolo de cada um ainda precisam ser conferidos.
+- **MPT:** os 24 formulários regionais (`peticionamento.prtN.mpt.mp.br/denuncia`) responderam, e as UFs de cada um foram conferidas pelas unidades listadas na própria página (ex.: a PRT8 tem unidade em Macapá; a PRT2 em Santos e a PRT15 em Ribeirão Preto). Anonimato, anexos e protocolo de cada formulário ainda precisam ser conferidos.
 - **Sites principais que responderam**, com canal marcado `revisar`: 25 Ministérios Públicos estaduais, 25 Defensorias estaduais, a DPU e 26 conselhos federais.
 
 **Nenhum canal está em modo `email` ainda.** Nenhum dos canais conferidos aceita denúncia por e-mail. O modo `email` entra conforme a moderação confirmar canais de sindicatos, conselhos regionais e ouvidorias que aceitam e-mail.
@@ -47,3 +47,5 @@ O grupo vira entidade assim: `mpt`, `mp_estadual` e `defensoria_estadual` pela U
 1. Confira a informação no site oficial da entidade.
 2. Edite o CSV, com `fonte_url` apontando para a página exata e `conferido_em` com a data.
 3. Abra um pull request explicando a mudança. Regras novas precisam de um caso de teste na T1B.4.
+
+Se não for editar o arquivo, abra uma issue com o modelo "Incluir entidade", "Incluir profissão ou tipo de abuso" ou "Corrigir dados de entidade". Na plataforma, o mesmo pedido é feito pelo Fale conosco ([perguntas frequentes](../../docs/faq.md#sugestões-reclamações-e-pedidos)). Nunca coloque dados pessoais nem detalhes de um caso numa issue: tudo no GitHub é público.
