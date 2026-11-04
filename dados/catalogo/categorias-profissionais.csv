@@ -1,0 +1,36 @@
+codigo,nome,conselho_sigla
+medicina,Medicina,CFM
+enfermagem,Enfermagem,COFEN
+psicologia,Psicologia,CFP
+engenharia,Engenharia,CONFEA
+agronomia,Agronomia,CONFEA
+contabilidade,Contabilidade,CFC
+odontologia,Odontologia,CFO
+farmacia,Farmacia,CFF
+nutricao,Nutricao,CFN
+medicina_veterinaria,Medicina veterinaria,CFMV
+educacao_fisica,Educacao fisica,CONFEF
+servico_social,Servico social,CFESS
+fisioterapia,Fisioterapia,COFFITO
+terapia_ocupacional,Terapia ocupacional,COFFITO
+administracao,Administracao,CFA
+economia,Economia,COFECON
+corretagem_imoveis,Corretagem imoveis,COFECI
+biologia,Biologia,CFBio
+biomedicina,Biomedicina,CFBM
+fonoaudiologia,Fonoaudiologia,CFFa
+arquitetura_urbanismo,Arquitetura urbanismo,CAU/BR
+tecnico_industrial,Tecnico industrial,CFT
+tecnico_agricola,Tecnico agricola,CFTA
+radiologia,Radiologia,CONTER
+estatistica,Estatistica,CONFE
+biblioteconomia,Biblioteconomia,CFB
+representacao_comercial,Representacao comercial,CONFERE
+advocacia,Advocacia,OAB
+professor,Professor ou professora,
+bancario,Bancário ou bancária,
+comerciario,Comerciário ou comerciária,
+trabalhador_domestico,Trabalho doméstico,
+motorista,Motorista,
+vigilante,Vigilante,
+outra,Outra,

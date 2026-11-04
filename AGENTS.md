@@ -4,11 +4,11 @@ Instruções para agentes de IA (e pessoas) que vão construir este projeto. Lei
 
 ## O que é
 
-Plataforma web, apartidária e sem fins lucrativos, para cidadãos denunciarem abusos políticos e violações de direitos, guardarem provas com segurança e encontrarem advogados verificados. Os dados do denunciante são privados por padrão e só são compartilhados com um profissional quando o próprio denunciante autoriza.
+Plataforma web, apartidária e sem fins lucrativos, para cidadãos denunciarem abusos políticos e violações de direitos, guardarem provas com segurança, encaminharem o caso aos órgãos e entidades competentes e encontrarem advogados verificados. Os dados do denunciante são privados por padrão e só são compartilhados com um profissional quando o próprio denunciante autoriza.
 
 ## Ordem de leitura
 
-1. [docs/requisitos.md](docs/requisitos.md): o que construir (briefing original).
+1. [docs/requisitos.md](docs/requisitos.md): o que construir (briefing original e o adendo de encaminhamento, §15).
 2. [docs/arquitetura/](docs/arquitetura/): como o sistema funciona, em diagramas Mermaid.
 3. [docs/convencoes.md](docs/convencoes.md): nomes, estrutura de pastas, padrões de código.
 4. [docs/decisoes.md](docs/decisoes.md): decisões já tomadas e o motivo. Não reabra sem motivo novo.
@@ -45,6 +45,9 @@ Estas regras protegem pessoas reais que podem sofrer retaliação. Elas valem ma
 8. **O resumo público só aparece depois da moderação.** Só o caso de uso de publicação, restrito ao papel moderador, muda o status para `publicada`.
 9. **Sem captação de clientela.** Nenhum recurso que permita a um profissional pagar por prioridade, destaque ou acesso a casos.
 10. **Neutralidade política.** Seeds, textos de exemplo, testes e interface não podem citar partidos, políticos ou posições políticas reais.
+11. **Nada sai para terceiros sem autorização explícita por destinatário.** O denunciante vê o dossiê exatamente como será enviado, escolhe a identificação permitida pelo canal e confirma com a senha. O que foi enviado fica guardado cifrado com o SHA-256.
+12. **O dossiê não inventa nada.** Usa só os campos e o relato do denunciante, com o relato literal. Se faltar algo que o canal exige, pergunte ao denunciante.
+13. **Sem robô em sistema de terceiros.** Não automatize login gov.br, não contorne captcha e não envie a entidade que a recomendação não indicou para o caso. Formulário oficial que não aceita integração usa o modo assistido.
 
 ## Como trabalhar
 

@@ -23,3 +23,15 @@
 | Lote | Grupo de N profissionais notificados de uma vez para um caso. | `notificacao.lote` |
 | Auditoria | Registro imutável de quem fez o quê, quando e sobre qual recurso. | `registro_auditoria` |
 | Fundo de apoio | Recursos excedentes da plataforma destinados a pagar a assistência de quem não pode. Fase 3. | `apoio_fundo`, `lancamento` |
+| Entidade | Quem pode receber uma denúncia: órgão público, Ministério Público, conselho profissional, sindicato, ouvidoria, canal de direitos humanos. Fase 1B. | `entidade` |
+| Natureza | Papel da entidade: fiscalizadora, investigativa ou judicial, representação, acolhimento, assistência jurídica. | `entidade.natureza` |
+| Canal | Meio oficial pelo qual a entidade recebe denúncias, com o que ele aceita (anônimo, sigilo, anexos, login, captcha). | `canal` |
+| Modo de envio | Como a plataforma usa um canal: `email` (automático), `assistido` (o denunciante envia com os campos prontos), `orientacao` (roteiro e dossiê impresso). | `canal.modo_envio` |
+| Regra de competência | Linha que diz qual entidade é competente para um tipo de abuso, vínculo, setor e profissão. | `regra_competencia` |
+| Recomendação | Lista de entidades competentes para um caso, com o motivo de cada uma. Calculada, não gravada. | caso de uso `RecomendarDestinatarios` |
+| Dossiê | Documento gerado para um destinatário a partir do caso, com o relato literal e a lista de provas. | `encaminhamento.dossie_cifrado` |
+| Encaminhamento | Envio de um caso a uma entidade, com status, protocolo, comprovante e respostas. | `encaminhamento` |
+| Identificação | O que o dossiê revela do denunciante: `identificado`, `sigiloso` ou `anonimo`, conforme o canal aceita. | `encaminhamento.identificacao` |
+| Protocolo | Número que a entidade dá ao registrar a denúncia. Cifrado, porque às vezes permite consultar o processo. | `encaminhamento.protocolo_cifrado` |
+| Comprovante | Arquivo que prova o envio (tela ou PDF do site oficial). Guardado como as provas. | `comprovante` |
+| CNES | Cadastro Nacional de Entidades Sindicais, do Ministério do Trabalho. Fonte dos sindicatos do catálogo. | `make importar-cnes` |

@@ -16,7 +16,8 @@ src/backend/
 ├── Modulos/
 │   ├── Identidade/                   # cadastro, login, profissionais e verificação
 │   ├── Casos/                        # denúncias, provas, classificação, moderação
-│   └── Assistencia/                  # interesse, autorização, atendimento; notificações e avaliações na F2
+│   ├── Assistencia/                  # interesse, autorização, atendimento; notificações e avaliações na F2
+│   └── Encaminhamento/               # catálogo de entidades, recomendação, dossiê, envio e acompanhamento (Fase 1B)
 │                                     # Plataforma/ (doações, fundo) só é criado na Fase 3
 └── tests/
     ├── Unitarios/

@@ -1,6 +1,6 @@
 # denunciar-um-abuso-politico
 
-Plataforma web, apartidária e sem fins lucrativos, para cidadãos denunciarem abusos políticos e violações de direitos, guardarem provas com segurança e encontrarem advogados verificados dispostos a ajudar.
+Plataforma web, apartidária e sem fins lucrativos, para cidadãos denunciarem abusos políticos e violações de direitos, guardarem provas com segurança, encaminharem o caso aos órgãos e entidades competentes e encontrarem advogados verificados dispostos a ajudar.
 
 ## Stack
 
@@ -24,6 +24,9 @@ Diagramas em Mermaid (o GitHub renderiza direto):
 3. [Distribuição de notificações (rodízio)](docs/arquitetura/03-distribuicao-notificacoes.md)
 4. [Modelo de dados](docs/arquitetura/04-modelo-de-dados.md)
 5. [Privacidade e permissões](docs/arquitetura/05-permissoes.md)
+6. [Encaminhamento a órgãos e entidades](docs/arquitetura/06-encaminhamento.md)
+
+Catálogo inicial de entidades, canais e regras de competência: [dados/catalogo/](dados/catalogo/).
 
 ## Infraestrutura e desenvolvimento
 

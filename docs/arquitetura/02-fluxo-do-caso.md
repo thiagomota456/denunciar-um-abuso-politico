@@ -2,6 +2,8 @@
 
 Os 8 passos do processo de assistência. Entre parênteses, o módulo responsável.
 
+O denunciante pode também encaminhar o caso a órgãos e entidades (Fase 1B, ver [encaminhamento](06-encaminhamento.md)), publicando o resumo ou não. Para isso, a moderação pode aprovar o caso sem publicar.
+
 No MVP, a classificação é feita pelo moderador junto com a revisão, e o profissional encontra o caso pela busca. A sugestão automática de classificação e as notificações em rodízio entram na Fase 2.
 
 ```mermaid
@@ -27,6 +29,11 @@ sequenceDiagram
     else Recusa
         D->>P: Recusa o pedido
         P-->>A: Avisa que o pedido foi recusado
+    end
+
+    opt Encaminhar a órgãos e entidades (Fase 1B)
+        D->>P: Escolhe destinatários recomendados e autoriza cada envio (Encaminhamento)
+        P-->>D: Protocolos, respostas e lembretes
     end
 
     Note over D,A: Em todos os passos, Auditoria registra quem fez, o quê, quando e sobre qual caso

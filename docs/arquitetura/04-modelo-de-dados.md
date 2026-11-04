@@ -7,6 +7,7 @@ Um schema por módulo, cada um com seu `DbContext`:
 | `identidade` | módulo Identidade | tabelas do ASP.NET Core Identity, `perfil_denunciante`, `profissional`, `escritorio` |
 | `casos` | módulo Casos | `denuncia`, `denuncia_privada`, `capacidade_financeira`, `prova`, `moderacao` |
 | `assistencia` | módulo Assistencia | `interesse`, `autorizacao`, `atendimento`, `movimentacao`, `avaliacao`, `notificacao` |
+| `encaminhamento` | módulo Encaminhamento (Fase 1B) | `entidade`, `canal`, `regra_competencia`, `categoria_profissional`, `modelo_documento`, `encaminhamento`, `evento_encaminhamento`, `comprovante` |
 | `auditoria` | Comum | `registro_auditoria` |
 | `plataforma` | módulo Plataforma (Fase 3) | `doacao`, `lancamento`, `apoio_fundo` |
 
@@ -69,16 +70,22 @@ erDiagram
         uuid autor_id FK
         string titulo
         string resumo_publico
-        string categoria
+        string categoria "tipo de abuso; lista em 06-encaminhamento"
         string area_juridica
         string municipio_aprox
         string uf
         date periodo_inicio
         date periodo_fim
-        string status "rascunho, em_revisao, publicada, em_atendimento, encerrada"
+        string status "rascunho, em_revisao, aprovada, publicada, em_atendimento, encerrada"
         bool anonimo
         int urgencia "1 a 3"
         bool precisa_gratuito "não público; usado no filtro de profissionais"
+        string vinculo "não público; F1B: clt, servidor_estatutario..."
+        string setor "não público; F1B: privado, publico_federal..."
+        string categoria_profissional "não público; F1B: código ou nulo"
+        string municipio_ibge "não público; F1B"
+        bool afeta_varias_pessoas "não público; F1B"
+        string empregador_cifrado "cifrado; F1B: nome, CNPJ e endereço de quem é denunciado"
         timestamp publicada_em
     }
     denuncia_privada {
@@ -107,7 +114,7 @@ erDiagram
         uuid id PK
         uuid denuncia_id FK
         uuid moderador_id
-        string decisao "publicar, devolver"
+        string decisao "publicar, aprovar_sem_publicar, devolver"
         string motivo
         timestamp em
     }
@@ -121,7 +128,7 @@ erDiagram
     autorizacao {
         uuid id PK
         uuid interesse_id FK
-        string_array escopo "relato, provas, testemunhas, contato"
+        string_array escopo "relato, provas, testemunhas, contato, encaminhamentos"
         timestamp concedida_em
         timestamp revogada_em "nulo = ativa"
     }
@@ -154,6 +161,114 @@ erDiagram
         timestamp enviada_em
     }
 ```
+
+`aprovada` = revisada pela moderação e liberada para encaminhamento automático, sem resumo público. Serve para quem quer encaminhar o caso a órgãos sem publicá-lo.
+
+## Schema `encaminhamento` (Fase 1B)
+
+Detalhes de uso em [encaminhamento](06-encaminhamento.md). O catálogo (`entidade`, `canal`, `regra_competencia`, `categoria_profissional`) é público e não tem dados pessoais. `denuncia_id` é referência a outro schema, sem chave estrangeira.
+
+```mermaid
+erDiagram
+    entidade ||--o{ canal : tem
+    categoria_profissional ||--o{ regra_competencia : filtra
+    entidade ||--o{ encaminhamento : recebe
+    canal ||--o{ encaminhamento : usado_em
+    encaminhamento ||--o{ evento_encaminhamento : tem
+    encaminhamento ||--o{ comprovante : tem
+
+    entidade {
+        uuid id PK
+        string grupo "ex.: mpt, mp_estadual, sindicato; as regras apontam para o grupo"
+        string nome
+        string sigla
+        string tipo "inspecao_trabalho, ministerio_publico, conselho_profissional, sindicato, federacao, confederacao, ouvidoria, defensoria, direitos_humanos, conselho_tutelar"
+        string natureza "fiscalizadora, investigativa_judicial, representacao, acolhimento, assistencia_juridica"
+        string esfera "federal, estadual, municipal, nao_estatal"
+        string_array ufs "vazio = todo o Brasil"
+        string_array municipios_ibge "vazio = toda a UF"
+        string_array categorias_profissionais "vazio = qualquer"
+        text categoria_texto "texto do CNES, para busca de texto"
+        string cnpj
+        string codigo_sindical UK "só sindicatos, chave da importação do CNES"
+        string origem "catalogo, cnes, sugestao"
+        string fonte_url
+        date conferido_em
+        bool ativa
+    }
+    canal {
+        uuid id PK
+        uuid entidade_id FK
+        string tipo "formulario_web, email, telefone, whatsapp, presencial, correio"
+        string endereco "URL, e-mail, telefone ou endereço postal"
+        string modo_envio "email, assistido, orientacao, api"
+        string aceita_anonimo "sim, nao, desconhecido"
+        string aceita_sigilo "sim, nao, desconhecido"
+        bool exige_login_govbr
+        bool tem_captcha
+        int max_anexos
+        int max_anexos_mb
+        bool gera_protocolo
+        int prazo_resposta_dias
+        jsonb campos "campos do formulário oficial e de onde vem o texto de cada um"
+        text instrucoes
+        string fonte_url
+        date conferido_em
+        string situacao "ok, url_falhou, email_devolvido, revisar"
+    }
+    regra_competencia {
+        uuid id PK
+        string categoria "tipo de abuso"
+        string_array vinculos "vazio = qualquer"
+        string_array setores "vazio = qualquer"
+        string categoria_profissional FK "nulo = qualquer"
+        bool so_se_afeta_varias_pessoas
+        string entidade_grupo "destino: as entidades do grupo que atendem a UF, o município ou a profissão do caso"
+        string canal_preferido "endereço do canal a usar, quando a entidade tem vários"
+        int prioridade
+        string motivo "texto mostrado ao denunciante"
+        string fonte_url
+    }
+    categoria_profissional {
+        string codigo PK
+        string nome
+        string conselho_sigla "ex.: COFEN; nulo se não regulamentada"
+    }
+    encaminhamento {
+        uuid id PK
+        uuid denuncia_id "único com entidade_id enquanto ativo"
+        uuid entidade_id FK
+        uuid canal_id FK
+        string identificacao "identificado, sigiloso, anonimo"
+        string status "rascunho, autorizado, enviado, falha, protocolado, respondido, encerrado, cancelado"
+        text dossie_cifrado "cifrado; cópia exata do que foi autorizado"
+        string dossie_sha256
+        uuid_array provas_enviadas
+        timestamp autorizado_em
+        string versao_consentimento
+        string token_resposta UK "endereço de resposta do e-mail"
+        string protocolo_cifrado "cifrado"
+        timestamp enviado_em
+        timestamp lembrete_em
+    }
+    evento_encaminhamento {
+        uuid id PK
+        uuid encaminhamento_id FK
+        string tipo "criado, autorizado, enviado, falha, protocolo, comprovante, resposta, lembrete, status, cancelado"
+        text texto_cifrado "cifrado; ex.: corpo da resposta"
+        uuid autor_id "nulo = sistema"
+        timestamp em
+    }
+    comprovante {
+        uuid id PK
+        uuid encaminhamento_id FK
+        string caminho_arquivo "arquivo cifrado em disco, como as provas"
+        string sha256
+        string antivirus "pendente, limpo, bloqueado"
+    }
+```
+
+`modelo_documento` (fora do diagrama): `tipo_entidade`, `cabecalho`, `pedido`, `versao`. Um modelo por tipo de entidade, editável pela moderação.
 
 Tabelas fora do diagrama:
 

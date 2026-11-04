@@ -136,6 +136,79 @@ Cada tarefa diz o que **ler** antes, o que **entregar** e como saber que está *
 
 ---
 
+## Fase 1B — Encaminhamento a órgãos e entidades
+
+Começa depois do deploy do MVP (T1.14). Leia antes [encaminhamento](arquitetura/06-encaminhamento.md), as regras 11 a 13 do [AGENTS.md](../AGENTS.md) e as decisões D21 a D28.
+
+### [ ] T1B.1 Módulo e catálogo
+
+- **Ler:** [modelo de dados](arquitetura/04-modelo-de-dados.md) (schema `encaminhamento`), [`dados/catalogo/LEIAME.md`](../dados/catalogo/LEIAME.md).
+- **Entregar:**
+  - Projeto `Modulos/Encaminhamento` com `EncaminhamentoDbContext` e as tabelas do catálogo (`entidade`, `canal`, `regra_competencia`, `categoria_profissional`, `modelo_documento`).
+  - Comando `make importar-catalogo` que lê os CSV de `dados/catalogo/` e faz upsert.
+  - Telas da moderação para editar entidades, canais e regras, e fila de sugestões dos usuários.
+  - Endpoints públicos de leitura do catálogo.
+- **Aceite:**
+  - A importação é idempotente: rodar duas vezes não duplica nada (teste).
+  - Linha sem `fonte_url` ou `conferido_em` é recusada com o número da linha.
+  - Toda edição do catálogo grava auditoria.
+
+### [ ] T1B.2 Importação dos sindicatos do CNES
+
+- **Ler:** seção "De onde vêm os dados" de [encaminhamento](arquitetura/06-encaminhamento.md).
+- **Entregar:** comando `make importar-cnes ARQUIVO=...` que lê a planilha oficial do MTE e grava sindicatos, federações e confederações com código sindical, CNPJ, base territorial, categoria em texto e contatos. Antes de codificar, abra a planilha, registre as colunas reais em `dados/catalogo/LEIAME.md` e a decisão em `docs/decisoes.md` se algo mudar.
+- **Aceite:** reimportar atualiza sem duplicar (chave: código sindical). Canais vindos do CNES entram com `modo_envio = orientacao`. Base territorial convertida para códigos do IBGE, com relatório das que não foram reconhecidas.
+
+### [ ] T1B.3 Dados do caso para encaminhamento
+
+- **Ler:** seção "Recomendação de destinatários" de [encaminhamento](arquitetura/06-encaminhamento.md).
+- **Entregar:** etapa nova no formulário da denúncia com vínculo, setor, profissão, município (código do IBGE), "afeta várias pessoas" e dados de quem é denunciado (empresa ou órgão). Pergunta ao denunciante o que quer: buscar advogado, encaminhar a órgãos ou os dois. Na moderação, a decisão `aprovar_sem_publicar`, que leva ao status `aprovada`.
+- **Aceite:** um caso `aprovada` não aparece na consulta pública (teste). Os dados do denunciado ficam cifrados.
+
+### [ ] T1B.4 Recomendação e página "Onde denunciar"
+
+- **Entregar:** caso de uso `RecomendarDestinatarios` (SQL sobre regras e catálogo, sem duplicatas, ordenado por natureza, com o motivo); endpoint para o dono do caso; página pública "Onde denunciar" que usa o mesmo cálculo sem gravar nada.
+- **Aceite:**
+  - Teste com um caso de cada linha da tabela "Regras iniciais" confere os destinos esperados.
+  - Servidor estatutário nunca recebe o MPT como destino (teste).
+  - A rota pública não grava a consulta em lugar nenhum, nem em log (teste).
+
+### [ ] T1B.5 Dossiê e identificação
+
+- **Entregar:** geração do dossiê por destinatário a partir de `modelo_documento` (HTML com CSS de impressão e versão em texto puro); checklist dos requisitos do canal; escolha de identificação limitada ao que o canal aceita, com os avisos de anonimato.
+- **Aceite:**
+  - O relato aparece no dossiê exatamente como foi escrito (teste por igualdade de texto).
+  - No modo `anonimo`, nome, CPF, e-mail e telefone não aparecem em nenhuma parte do dossiê nem do e-mail (teste).
+  - A opção `anonimo` não aparece para canal com `aceita_anonimo` diferente de `sim`.
+
+### [ ] T1B.6 Autorização e envio por e-mail
+
+- **Ler:** [decisões](decisoes.md) D27 e D28, seção "Envio para vários destinatários".
+- **Entregar:** tela que mostra cada dossiê e pede a senha para autorizar um ou vários destinatários; gravação de `dossie_cifrado`, `dossie_sha256`, `versao_consentimento`; job do Hangfire que envia com MailKit, provas anexas até o limite do canal, `Reply-To` com o token e `Message-ID` derivado do ID do encaminhamento; limites por usuário e por entidade.
+- **Aceite:**
+  - Sem autorização, nada é enviado (teste).
+  - Caso fora de `publicada` ou `aprovada` não envia por e-mail (teste).
+  - Segundo encaminhamento ativo para a mesma entidade é recusado (teste).
+  - Repetir o job não envia o e-mail duas vezes (teste com o Mailpit).
+  - Entidade fora da recomendação do caso é recusada (teste).
+
+### [ ] T1B.7 Modo assistido e orientação
+
+- **Entregar:** tela com o link oficial, cada campo de `canal.campos` com o texto pronto e botão de copiar, as provas para baixar e o passo a passo; registro de protocolo e envio de comprovante (cifrado, ClamAV, endpoint autorizado). Modo `orientacao` com roteiro e dossiê para imprimir.
+- **Aceite:** a plataforma não abre o formulário oficial em iframe nem preenche nada nele. Comprovante segue as mesmas regras de acesso das provas (teste).
+
+### [ ] T1B.8 Acompanhamento e respostas
+
+- **Entregar:** linha do tempo do encaminhamento; job que lê a caixa IMAP, liga a resposta pelo token e grava o texto cifrado; aviso ao denunciante; lembrete quando passar `prazo_resposta_dias`; mudança manual de status pelo denunciante.
+- **Aceite:** e-mail com token desconhecido não é gravado em nenhum caso (teste). Resposta de um encaminhamento não aparece em outro.
+
+### [ ] T1B.9 Manutenção do catálogo e permissões
+
+- **Entregar:** job mensal que testa as URLs dos canais; marcação de canal com e-mail devolvido; fila de revisão para `conferido_em` com mais de 12 meses; linhas novas da tabela de permissões no teste de matriz; Playwright no fluxo: caso aprovado → recomendação → dossiê → autorizar → e-mail no Mailpit → resposta → status `respondido`.
+- **Aceite:** todos os testes passam no CI.
+
+---
+
 ## Fase 2 — Operação e expansão
 
 - [ ] **T2.1 Distribuição de notificações em rodízio**, conforme [distribuição](arquitetura/03-distribuicao-notificacoes.md). Job do Hangfire; N e X configuráveis no `.env`; teste que simula 100 casos e mostra a distribuição equilibrada.

@@ -307,3 +307,28 @@ Uma plataforma cívica que permita a qualquer cidadão documentar possíveis abu
 Ao mesmo tempo, deverá oferecer aos profissionais jurídicos um ambiente organizado para encontrar e acompanhar causas compatíveis com sua atuação.
 
 O projeto deverá priorizar simplicidade, segurança, transparência, neutralidade política, viabilidade jurídica e sustentabilidade financeira, possibilitando seu crescimento gradual sem comprometer a experiência dos usuários.
+
+## 15. Encaminhamento a órgãos e entidades (adendo)
+
+Pedido do mantenedor, acrescentado depois do briefing original. Arquitetura em [06-encaminhamento.md](arquitetura/06-encaminhamento.md).
+
+Ajustar o projeto para facilitar e automatizar o encaminhamento de denúncias a sindicatos, órgãos de classe, conselhos profissionais, ministérios, Ministério Público e órgãos públicos de fiscalização, regulamentação e proteção dos direitos dos trabalhadores.
+
+### Funcionalidades desejadas
+
+1. **Mapeamento de entidades:** pesquisar e catalogar os sindicatos, federações, confederações, conselhos profissionais e órgãos públicos competentes em todo o Brasil, incluindo entidades municipais, estaduais e federais. Identificar suas atribuições, abrangência territorial, categorias profissionais atendidas, tipos de denúncia aceitos, canais oficiais e requisitos de encaminhamento.
+2. **Identificação automática dos destinatários:** com base no relato, na profissão, na localização, no vínculo empregatício e no tipo de abuso, identificar e recomendar as entidades competentes para receber a denúncia.
+3. **Automação do encaminhamento:** permitir enviar denúncias por e-mail, preencher automaticamente formulários oficiais ou utilizar APIs disponíveis. Quando não for possível automatizar o envio, preparar o formulário preenchido ou a documentação necessária e orientar o usuário sobre como concluir o procedimento.
+4. **Geração inteligente de denúncias:** transformar o relato original em documentos estruturados, objetivos e adequados às exigências de cada destinatário, preservando os fatos e as provas, sem inventar informações.
+5. **Envio para múltiplas entidades:** permitir selecionar vários destinatários e encaminhar a denúncia simultaneamente, mediante autorização explícita do denunciante, evitando duplicações e encaminhamentos a órgãos sem competência.
+6. **Privacidade e segurança:** proteger a identidade do denunciante e os documentos anexados, respeitando as possibilidades de anonimato e sigilo de cada canal. Não expor informações sensíveis sem autorização.
+7. **Acompanhamento:** registrar os encaminhamentos, protocolos, comprovantes, respostas e andamento de cada denúncia.
+
+### Diretrizes de implementação
+
+- Priorizar entidades que efetivamente recebem denúncias, fiscalizam irregularidades ou atuam na defesa dos trabalhadores.
+- Diferenciar órgãos fiscalizadores, entidades de representação profissional e instituições com competência investigativa ou judicial.
+- Utilizar fontes oficiais e manter o cadastro de entidades e canais atualizado.
+- Não presumir que todas as instituições aceitam denúncias por e-mail ou permitem preenchimento automatizado.
+- Priorizar soluções simples, eficientes, escaláveis e de baixo custo operacional.
+- Preservar as funcionalidades existentes do projeto, integrando os novos recursos sem complexidade desnecessária.

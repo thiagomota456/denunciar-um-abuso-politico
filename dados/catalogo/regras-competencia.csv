@@ -1,0 +1,55 @@
+id,categoria,vinculos,setores,categoria_profissional,so_se_afeta_varias_pessoas,entidade_grupo,canal_preferido,prioridade,motivo,fonte_url
+r001,assedio_eleitoral,clt|temporario|terceirizado|estagiario,privado,,false,mpt,,1,O MPT investiga assédio eleitoral contra trabalhadores do setor privado.,https://mpt.mp.br/assedio-eleitoral
+r002,assedio_eleitoral,clt|temporario|terceirizado|estagiario,privado,,false,mte,https://assedioeleitoral.trabalho.gov.br/,1,O Ministério do Trabalho fiscaliza o assédio eleitoral no trabalho e tem um canal próprio para isso.,https://assedioeleitoral.trabalho.gov.br/
+r003,assedio_eleitoral,,,,false,mp_eleitoral,,2,"Usar violência ou grave ameaça para coagir alguém a votar, ou a não votar, é crime eleitoral. O MP Eleitoral apura.",https://www.planalto.gov.br/ccivil_03/leis/l4737compilado.htm
+r004,assedio_eleitoral,,publico_federal,,false,mpf,,2,"Quando quem pressiona é agente de um órgão federal, o MPF pode apurar improbidade e abuso.",https://www.mpf.mp.br/servicos/denuncias/representacao
+r005,assedio_eleitoral,,publico_estadual|publico_municipal,,false,mp_estadual,,2,"Quando quem pressiona é agente de um órgão estadual ou municipal, o Ministério Público do estado pode apurar improbidade e abuso.",https://www.mpf.mp.br/servicos/denuncias/representacao
+r006,assedio_eleitoral,,publico_federal,,false,falabr,,3,A ouvidoria do órgão federal recebe a denúncia pelo Fala.BR.,https://www.gov.br/acessoainformacao/pt-br/falabr/visao-geral
+r007,assedio_eleitoral,,,,false,sindicato,,3,O sindicato da categoria pode orientar e agir em nome do grupo.,https://mpt.mp.br/assedio-eleitoral
+r008,perseguicao_politica,,publico_federal,,false,falabr,,1,A ouvidoria do órgão federal recebe a denúncia pelo Fala.BR e encaminha à corregedoria.,https://www.gov.br/acessoainformacao/pt-br/falabr/visao-geral
+r009,perseguicao_politica,,publico_federal,,false,mpf,,2,O MPF apura abuso e improbidade de agentes federais.,https://www.mpf.mp.br/servicos/denuncias/representacao
+r010,perseguicao_politica,,publico_estadual|publico_municipal,,false,mp_estadual,,2,O Ministério Público do estado apura abuso e improbidade de agentes estaduais e municipais.,https://www.mpf.mp.br/servicos/denuncias/representacao
+r011,perseguicao_politica,clt|temporario|terceirizado|estagiario,privado,,false,mpt,,1,"No setor privado, punir alguém por opinião política é discriminação no trabalho. O MPT investiga.",https://mpt.mp.br/pgt/servicos/servico-denuncie
+r012,perseguicao_politica,,,,false,sindicato,,3,O sindicato da categoria pode orientar e agir em nome do grupo.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r013,perseguicao_politica,,,,false,defensoria_estadual,,4,"Para uma ação individual, sem pagar advogado.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r014,irregularidade_trabalhista,clt|temporario|terceirizado|estagiario,privado,,false,mte,https://denuncia.sit.trabalho.gov.br/,1,"A Inspeção do Trabalho fiscaliza salário, jornada, FGTS e registro.",https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r015,irregularidade_trabalhista,clt|temporario|terceirizado|estagiario,privado,,true,mpt,,2,"Quando a irregularidade atinge várias pessoas, o MPT pode investigar e propor ação coletiva.",https://mpt.mp.br/pgt/servicos/servico-denuncie
+r016,irregularidade_trabalhista,clt|temporario|terceirizado|estagiario,privado,,false,sindicato,,3,O sindicato da categoria pode cobrar a empresa e orientar.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r017,trabalho_escravo,,,,false,mte,https://ipe.sit.trabalho.gov.br/,1,"O Sistema Ipê do Ministério do Trabalho recebe denúncias de trabalho escravo, inclusive anônimas.",https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r018,trabalho_escravo,,,,false,mpt,,1,O MPT investiga trabalho análogo ao de escravo.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r019,trabalho_escravo,,,,false,mpf,,2,Reduzir alguém a condição análoga à de escravo é crime (art. 149 do Código Penal). O MPF apura.,https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm
+r020,trabalho_escravo,,,,false,disque100,,4,"O Disque 100 recebe a denúncia, inclusive anônima, e repassa aos órgãos competentes.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r021,trabalho_infantil,,,,false,mte,https://ipetrabalhoinfantil.trabalho.gov.br/,1,O Ipê Trabalho Infantil do Ministério do Trabalho recebe essas denúncias.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r022,trabalho_infantil,,,,false,mpt,,1,O MPT investiga trabalho infantil.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r023,trabalho_infantil,,,,false,conselho_tutelar,,2,O Conselho Tutelar do município protege a criança ou o adolescente.,https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r024,trabalho_infantil,,,,false,disque100,,4,"O Disque 100 recebe a denúncia, inclusive anônima, e repassa aos órgãos competentes.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r025,desigualdade_salarial,clt|temporario|terceirizado|estagiario,privado,,false,mte,https://denuncia.sit.trabalho.gov.br/home?tipo_de_denuncia=28,1,O Ministério do Trabalho tem um canal próprio para desigualdade salarial entre mulheres e homens.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r026,desigualdade_salarial,clt|temporario|terceirizado|estagiario,privado,,false,mpt,,2,O MPT investiga discriminação salarial.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r027,desigualdade_salarial,clt|temporario|terceirizado|estagiario,privado,,false,sindicato,,3,O sindicato da categoria pode cobrar a empresa e orientar.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r028,assedio_moral,clt|temporario|terceirizado|estagiario,privado,,false,mpt,,1,O MPT investiga assédio no ambiente de trabalho.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r029,assedio_moral,clt|temporario|terceirizado|estagiario,privado,,false,mte,https://denuncia.sit.trabalho.gov.br/,2,A Inspeção do Trabalho pode fiscalizar a empresa.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r030,assedio_moral,clt|temporario|terceirizado|estagiario,privado,,false,sindicato,,3,O sindicato da categoria pode orientar e agir em nome do grupo.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r031,assedio_moral,,publico_federal,,false,falabr,,1,A ouvidoria do órgão federal recebe a denúncia pelo Fala.BR.,https://www.gov.br/acessoainformacao/pt-br/falabr/visao-geral
+r032,assedio_moral,,,,false,defensoria_estadual,,4,"Para uma ação individual, sem pagar advogado.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r033,assedio_sexual,clt|temporario|terceirizado|estagiario,privado,,false,mpt,,1,O MPT investiga assédio no ambiente de trabalho.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r034,assedio_sexual,clt|temporario|terceirizado|estagiario,privado,,false,mte,https://denuncia.sit.trabalho.gov.br/,2,A Inspeção do Trabalho pode fiscalizar a empresa.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r035,assedio_sexual,clt|temporario|terceirizado|estagiario,privado,,false,sindicato,,3,O sindicato da categoria pode orientar e agir em nome do grupo.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r036,assedio_sexual,,publico_federal,,false,falabr,,1,A ouvidoria do órgão federal recebe a denúncia pelo Fala.BR.,https://www.gov.br/acessoainformacao/pt-br/falabr/visao-geral
+r037,assedio_sexual,,,,false,defensoria_estadual,,4,"Para uma ação individual, sem pagar advogado.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r038,discriminacao,clt|temporario|terceirizado|estagiario,privado,,false,mpt,,1,O MPT investiga discriminação no trabalho.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r039,discriminacao,clt|temporario|terceirizado|estagiario,privado,,false,mte,https://denuncia.sit.trabalho.gov.br/,2,A Inspeção do Trabalho pode fiscalizar a empresa.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r040,discriminacao,,,,false,disque100,,3,O Disque 100 recebe denúncias de discriminação e repassa aos órgãos competentes.,https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r041,discriminacao,,,,false,defensoria_estadual,,4,"Para uma ação individual, sem pagar advogado.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r042,saude_seguranca,clt|temporario|terceirizado|estagiario,privado,,false,mte,https://denuncia.sit.trabalho.gov.br/,1,A Inspeção do Trabalho fiscaliza as normas de saúde e segurança.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r043,saude_seguranca,clt|temporario|terceirizado|estagiario,privado,,false,mpt,,2,O MPT investiga riscos que atingem os trabalhadores.,https://mpt.mp.br/pgt/servicos/servico-denuncie
+r044,saude_seguranca,clt|temporario|terceirizado|estagiario,privado,,false,sindicato,,3,O sindicato da categoria pode cobrar a empresa e orientar.,https://www.gov.br/pt-br/servicos/realizar-denuncia-trabalhista
+r045,etica_profissional,,,,false,conselho_profissional,,1,O conselho da profissão fiscaliza a conduta ética de quem tem registro nele.,https://portal.cfm.org.br
+r046,abuso_de_autoridade,,publico_federal,,false,mpf,,1,O MPF apura abuso de autoridade de agentes federais.,https://www.mpf.mp.br/servicos/denuncias/representacao
+r047,abuso_de_autoridade,,publico_estadual|publico_municipal,,false,mp_estadual,,1,O Ministério Público do estado apura abuso de autoridade de agentes estaduais e municipais.,https://www.mpf.mp.br/servicos/denuncias/representacao
+r048,abuso_de_autoridade,,publico_federal,,false,falabr,,2,A ouvidoria do órgão federal recebe a denúncia pelo Fala.BR.,https://www.gov.br/acessoainformacao/pt-br/falabr/visao-geral
+r049,abuso_de_autoridade,,,,false,defensoria_estadual,,3,"Para uma ação individual, sem pagar advogado.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r050,violacao_direitos_humanos,,,,false,disque100,,1,"O Disque 100 recebe a denúncia, inclusive anônima, e repassa aos órgãos competentes.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r051,violacao_direitos_humanos,,publico_federal,,false,mpf,,2,O MPF defende os direitos do cidadão diante de órgãos federais.,https://www.mpf.mp.br/servicos/denuncias/representacao
+r052,violacao_direitos_humanos,,publico_estadual|publico_municipal,,false,mp_estadual,,2,O Ministério Público do estado defende os direitos do cidadão diante de órgãos estaduais e municipais.,https://www.mpf.mp.br/servicos/denuncias/representacao
+r053,violacao_direitos_humanos,,,,false,defensoria_estadual,,3,"Para uma ação individual, sem pagar advogado.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos
+r054,outro,,,,false,defensoria_estadual,,4,"Para orientação e uma ação individual, sem pagar advogado.",https://www.gov.br/pt-br/servicos/denunciar-violacao-de-direitos-humanos

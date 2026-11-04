@@ -15,6 +15,7 @@ Objetivo: o mais barato e simples possível no MVP, sem fechar portas para cresc
 | Antivírus de arquivos | ClamAV no próprio VPS | R$ 0 |
 | E-mail transacional | Plano gratuito de um provedor SMTP (algumas centenas de e-mails/dia) | R$ 0 no início |
 | MFA | App autenticador (TOTP), sem SMS | R$ 0 |
+| Caixa de e-mail com IMAP no domínio (Fase 1B, para as respostas das entidades) | Plano mais simples de um provedor de e-mail | Varia por provedor; confira antes de contratar |
 | Backup externo | Bucket compatível com S3 ou storage box, poucos GB | ≈ R$ 5 a R$ 20 |
 | CI | GitHub Actions (gratuito em repositório público) | R$ 0 |
 | **Total** | | **≈ R$ 35 a R$ 100/mês** |
@@ -75,7 +76,8 @@ As mesmas variações em `.com.br` também estavam livres.
 │   │   ├── Modulos/
 │   │   │   ├── Identidade/          # cada módulo: Contratos, Dominio, Aplicacao, Infra, Endpoints
 │   │   │   ├── Casos/
-│   │   │   └── Assistencia/         # Plataforma/ só na Fase 3
+│   │   │   ├── Assistencia/         # Plataforma/ só na Fase 3
+│   │   │   └── Encaminhamento/      # Fase 1B
 │   │   └── tests/
 │   │       ├── Unitarios/
 │   │       ├── Integracao/          # Testcontainers + WebApplicationFactory
@@ -90,6 +92,7 @@ As mesmas variações em `.com.br` também estavam livres.
 ├── .env.example                     # versionado, sem segredos
 ├── .env                             # NÃO versionado
 ├── Makefile
+├── dados/catalogo/                 # entidades, canais e regras de competência (CSV)
 └── docs/
 ```
 
@@ -279,6 +282,16 @@ ClamAv__Habilitado=false
 # Hash de CPF para busca (HMAC-SHA256). Nunca troque depois de ter dados: os hashes antigos deixam de bater.
 Cifra__ChaveHmac=gere-com-openssl-rand-base64-32
 
+# Encaminhamento (Fase 1B). Em dev, o Mailpit recebe os e-mails e não há IMAP.
+Encaminhamento__Remetente=encaminhamentos@localhost
+Encaminhamento__DominioResposta=localhost
+Encaminhamento__LimiteDiarioPorUsuario=10
+Encaminhamento__LimiteDiarioPorEntidade=50
+Imap__Habilitado=false
+Imap__Host=
+Imap__Usuario=
+Imap__Senha=
+
 # Primeiro admin, criado pelo seed se não existir
 Admin__Email=admin@localhost
 Admin__SenhaInicial=troque-no-primeiro-login
@@ -368,8 +381,9 @@ deploy:         ## no servidor: atualiza e reinicia
 3. Instalar o Docker, clonar o repositório e criar o `.env` de produção.
 4. Apontar o DNS do domínio para o IP do VPS (via Cloudflare).
 5. `make deploy`. O Caddy emite o certificado HTTPS sozinho.
-6. Agendar `deploy/backup.sh` no cron: `pg_dump` cifrado + volumes `provas` e `chaves` → armazenamento externo, todas as noites, guardando 30 dias.
-7. Testar a restauração do backup uma vez antes de abrir para o público.
+6. Configurar SPF, DKIM e DMARC do domínio no provedor de e-mail. Sem isso, os encaminhamentos da Fase 1B tendem a cair no spam dos órgãos públicos.
+7. Agendar `deploy/backup.sh` no cron: `pg_dump` cifrado + volumes `provas` e `chaves` → armazenamento externo, todas as noites, guardando 30 dias.
+8. Testar a restauração do backup uma vez antes de abrir para o público.
 
 ## Fontes
 

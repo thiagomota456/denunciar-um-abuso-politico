@@ -1,6 +1,6 @@
 # 1 · Visão geral: módulos e integrações
 
-Monólito modular com um único deploy. O backend tem **3 módulos no MVP** (um projeto C# e um schema do banco cada) e um quarto na Fase 3. Os módulos só conversam entre si por interfaces públicas (`Contratos/`), o que permite separá-los no futuro se for preciso.
+Monólito modular com um único deploy. O backend tem **3 módulos no MVP** (um projeto C# e um schema do banco cada), um quarto na Fase 1B (Encaminhamento) e um quinto na Fase 3. Os módulos só conversam entre si por interfaces públicas (`Contratos/`), o que permite separá-los no futuro se for preciso.
 
 ```mermaid
 flowchart LR
@@ -30,6 +30,11 @@ flowchart LR
             A3["notificações em rodízio · F2"]
             A4["avaliações · F2"]
         end
+        subgraph ME["Encaminhamento · F1B"]
+            E4["catálogo de entidades e canais"]
+            E5["recomendação por competência"]
+            E6["dossiê, envio e acompanhamento"]
+        end
         subgraph MP["Plataforma · F3"]
             P1["doações, fundo, transparência, publicidade"]
         end
@@ -46,17 +51,21 @@ flowchart LR
         E1["SMTP<br/>e-mails"]
         E2["Gateway PIX e cartão · F3"]
         E3["gov.br · F2, se aprovado"]
+        E7["Entidades que aceitam e-mail<br/>MP, conselhos, sindicatos · F1B"]
+        E8["Caixa IMAP<br/>respostas das entidades · F1B"]
     end
 
     U1 & U2 & U3 & U4 --> FE
     FE -->|"HTTPS /api"| API
     API --> PG & FS & AV
-    API -.-> E1 & E2 & E3
+    API -.-> E1 & E2 & E3 & E7 & E8
 ```
 
-**Legenda:** sem marcação = MVP (Fase 1). F2 e F3 = fases seguintes. Linha tracejada = serviço externo.
+**Legenda:** sem marcação = MVP (Fase 1). F1B, F2 e F3 = fases seguintes. Linha tracejada = serviço externo.
 
 A verificação da OAB é **manual** no MVP: o admin confere no site do CNA, que não tem API pública (ver [decisões](../decisoes.md), D9).
+
+Formulários oficiais (MTE, MPT, MPF, Fala.BR) não aparecem como integração: o denunciante os preenche no site oficial, com os campos prontos pela plataforma (modo assistido, ver [encaminhamento](06-encaminhamento.md) e D23).
 
 ## Implantação
 
